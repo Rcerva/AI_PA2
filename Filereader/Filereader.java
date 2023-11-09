@@ -19,10 +19,6 @@ public class Filereader {
 	            this.param = br.readLine();
 							this.team = br.readLine();
 
-							System.out.println(algorithm);
-							System.out.println(param);
-							System.out.println(team);
-
 	            // Read the board grid
 	            for (int i = 0; i < 6; i++) {
 	                String row = br.readLine();
