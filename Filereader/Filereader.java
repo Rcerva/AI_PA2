@@ -77,9 +77,9 @@ public class Filereader {
 			for(int row = 5; row >= 0; row--){
 				if(grid[row][col] == 'O') continue;
 				//Check Column
-				if(row > 3 && grid[row][col] == grid[row-1][col] && grid[row-1][col] == grid[row-2][col] && grid[row-2][col] == grid[row-3][col]) return true;
+				if(row >= 3 && grid[row][col] == grid[row-1][col] && grid[row-1][col] == grid[row-2][col] && grid[row-2][col] == grid[row-3][col]) return true;
 				//Check Row
-				if(col > 3 && grid[row][col] == grid[row][col-1] && grid[row][col-1] == grid[row][col-2] && grid[row][col-2] == grid[row][col-3]) return true;
+				if(col >= 3 && grid[row][col] == grid[row][col-1] && grid[row][col-1] == grid[row][col-2] && grid[row][col-2] == grid[row][col-3]) return true;
 				//Check Diags left
 				if(col > 3 && grid[row][col] == grid[row-1][col-1] && grid[row-1][col-1] == grid[row-2][col-2] && grid[row-2][col-2] == grid[row-3][col-3]) return true;
 				//Check Diags right
@@ -95,9 +95,9 @@ public class Filereader {
 			for(int row = 5; row >= 0; row--){
 				if(grid[row][col] == 'O') continue;
 				//Check Column
-				if(row > 3 && grid[row][col] == grid[row-1][col] && grid[row-1][col] == grid[row-2][col] && grid[row-2][col] == grid[row-3][col]) return res += grid[row][col];
+				if(row >= 3 && grid[row][col] == grid[row-1][col] && grid[row-1][col] == grid[row-2][col] && grid[row-2][col] == grid[row-3][col]) return res += grid[row][col];
 				//Check Row
-				if(col > 3 && grid[row][col] == grid[row][col-1] && grid[row][col-1] == grid[row][col-2] && grid[row][col-2] == grid[row][col-3]) return res += grid[row][col];
+				if(col >= 3 && grid[row][col] == grid[row][col-1] && grid[row][col-1] == grid[row][col-2] && grid[row][col-2] == grid[row][col-3]) return res += grid[row][col];
 				//Check Diags left
 				if(col > 3 && grid[row][col] == grid[row-1][col-1] && grid[row-1][col-1] == grid[row-2][col-2] && grid[row-2][col-2] == grid[row-3][col-3]) return res += grid[row][col];
 				//Check Diags right
