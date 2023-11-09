@@ -10,7 +10,11 @@ public class Main {
         System.out.println(board.getAlgorithm());
         System.out.println(board.getParameter());
         System.out.println(board.getTeam());
+
         board.printBoard();
+        board.printOccupied();
+
+        System.out.println(board.isTerminal());
     }
         
 }

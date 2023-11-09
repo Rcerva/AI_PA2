@@ -6,6 +6,7 @@ import java.io.IOException;
 
 public class Filereader {
 	    private Character[][] grid = new Character[6][7];
+			private int[] occupied = new int[7];
       private String algorithm;
       private String param;
 			private String team;
@@ -21,10 +22,11 @@ public class Filereader {
 
 	            // Read the board grid
 	            for (int i = 0; i < 6; i++) {
-	                String row = br.readLine();
-	                for (int j = 0; j < 7; j++) {
-	                    grid[i][j] = row.charAt(j);
-	                }
+								String row = br.readLine();
+								for (int j = 0; j < 7; j++) {
+									grid[i][j] = row.charAt(j);
+									if(grid[i][j] != 'O') occupied[j]++;
+								}
 	            }
 
 	            br.close();
@@ -34,12 +36,20 @@ public class Filereader {
 	    }
 
 	    public void printBoard() {
-	        for (Character[] row : grid) {
-	            for (Character value : row) {
-	                System.out.print(value + " ");
-	            }
-	            System.out.println();
-	        }
+				for (Character[] row : grid) {
+					for (Character value : row) {
+						System.out.print(value + " ");
+					}
+					System.out.println();
+				}
+				System.out.println();
+	    }
+
+			public void printOccupied() {
+				for (int count : occupied) {
+					System.out.print(count + " ");
+				}
+				System.out.println();
 	    }
 
 	    public String getAlgorithm() {
@@ -57,4 +67,22 @@ public class Filereader {
 	    public Character[][] getGrid() {
 	        return grid;
 	    }
+
+			public String isTerminal(){
+				String res = "";
+				for(int col = 6; col >= 0; col--){
+					for(int row = 5; row-3 >= 0; row--){
+						if(grid[row][col] == 'O') continue;
+						//Check Column
+						if(grid[row][col] == grid[row-1][col] && grid[row-1][col] == grid[row-2][col] && grid[row-2][col] == grid[row-3][col]) return res += grid[row][col];
+						//Check Row
+						if(col > 3 && grid[row][col] == grid[row][col-1] && grid[row][col-1] == grid[row][col-2] && grid[row][col-2] == grid[row][col-3]) return res += grid[row][col];
+						//Check Diags left
+						if(col > 3 && grid[row][col] == grid[row-1][col-1] && grid[row-1][col-1] == grid[row-2][col-2] && grid[row-2][col-2] == grid[row-3][col-3]) return res += grid[row][col];
+						//Check Diags right
+						if(col <= 3 && grid[row][col] == grid[row-1][col+1] && grid[row-1][col+1] == grid[row-2][col+2] && grid[row-2][col+2] == grid[row-3][col+3]) return res += grid[row][col];
+					}
+				}
+				return "FALSE";
+			}
 }
