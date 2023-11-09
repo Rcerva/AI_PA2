@@ -9,6 +9,7 @@ Groups:	You	are	encouraged	to	work	in	a	group	of	two	for	this	assignment;	due	to
 differences	in	requirements	it	is	preferable	to	have	homogeneous	groups	of	either	
 graduate	or	undergraduate	students,	but	this	is	not	required.	If	you	need	to	work	in	
 a	group	of	three	please	get	prior	approval (this	should	be	rare).
+
 Turn	in	only	one	copy	per	group,	clearly	listing	all team	members.		In	your	writeup	
 you	should	including	a	brief discussion	of	what	the	contributions	of	each	individual	
 team	member	were	towards	the	final	submission.		It	is	expected	that	each	team	
@@ -16,9 +17,11 @@ member	will	contribute	significantly	towards	the	design,	coding,	testing,	and
 documentation	aspects	of	the	project.		Paired	coding	and	similar	approaches	are	
 encouraged. This	is	a	project	of	significant	complexity,	and	you	should	plan	for	it	to	
 take	multiple	programming	sessions	over	a	couple	of	weeks	to	get	it	completed.	
+
 Objective:	To	implement	and	experiment	with	some	core	algorithms	for	game	tree	
 search,	including	minmax	and	Monte	Carlo	Tree	Search.
-AI	Agents	for	Game	Playing	
+
+# AI	Agents	for	Game	Playing	
 In	this	assignment	you	will	be	developing	AI	agents	to	play	the	game	of	Connect	
 Four	based	on	some	core	algorithms	we	have	discussed	in	class.	The	game	of	
 Connect	Four	is	played	on	a	grid	with	7	columns	and	6	rows,	and	the	basic	goal	of	
@@ -27,7 +30,9 @@ line.	Please	see	https://en.wikipedia.org/wiki/Connect_Four	for	more	details	on	
 rules	and	gameplay.	In	the	first	part	you	will	develop	and	test	algorithms	for	making	
 move	selections	given	a	specific	board	state.	In	the	second	part	you	will	test	these	
 algorithms	against	each	other	in	actual	game	play.
-Part	I:	Algorithms for	Selecting	Moves	
+
+# Part	I:	Algorithms for	Selecting	Moves	
+
 In	the	first	part	you	implement	four algorithms	for	selecting	moves	for given	board	
 configurations.	Your	code	must read	a	game	board	from	a	file	given	in	a	specific	
 format	and	run	a	specified	algorithm	with	a	specified parameter	setting.	The	
@@ -39,6 +44,7 @@ The	third	line	specifies	the	player	who	will	make	the	next	move (R	or	Y).	The	ne
 six	lines	represent	the	current	configuration	of	the	game	board.	We	will	use	the	
 colors	Red	and	Yellow	for	the	two	players;	their	pieces	are	represented	by	the	
 characters	‘R’	and	‘Y’	respectively.	The	character	‘O’	represents	an	open	space.	
+
 Moves	are	made	by	specifying	a	valid	column	from	1-7	to	add	a	new	piece	to	
 (columns	that	are	already	full	are	illegal	moves).	We	will	consider	the	Red	player	the	
 “Min”	player	and	represent	a	win	for	Red	as	a	-1.	The	Yellow	player	is	the	“Max”	
@@ -52,18 +58,22 @@ OOYOOOY
 OOROOOY
 OYRYOYR
 YRRYORR
+
 Your	code	should	run	on	the	command	line	and	take	in	two parameters.	The	first	
 specifies	the	name	of	the	input	file	to	read.	The	second parameter	specifies	
 “Verbose”	“Brief”	or	“None”	which	control	what	your	algorithm	will	print	for	output.	
+
 python test1.txt	Verbose
 python	test4.txt	Brief
-Algorithm	1:	Uniform	Random	(UR)
+
+# Algorithm	1:	Uniform	Random	(UR)
 This	is	a	trivial	algorithm	used	for	basic	testing	and	benchmarking.	It	selects	a	legal	
 move	for	the	specified	player	using	the	uniform	random	strategy	(i.e.,	each	legal	
 move	is	selected	with	the	same	probability.	The	parameter	value	should	always	be	0	
 for this	algorithm.	You	should	print	only	the	move	that	is	selected.	
 FINAL	Move	selected:	4	
-Algorithm	2: Depth-Limited	MinMax	(DLMM)
+
+# Algorithm	2: Depth-Limited	MinMax	(DLMM)
 This	algorithm	uses	depth-first	minmax	search	out	to	a	specified	 maximum	depth	to	
 select	a	move.	You	should	test	each	node	to	see	whether	it	is	a	terminal	state	(i.e.,	a	
 win	for	one	player	or	a	draw);	if	so	return	that	value	immediately.	If	you	reach	the	
@@ -85,7 +95,8 @@ Column	5:	-0.23
 Column	6:	0	
 Column	7:	0.55
 FINAL	Move	selected:	3	
-Algorithm	3:	Pure	Monte	Carlo	Game	Search	(PMCGS)
+
+# Algorithm	3:	Pure	Monte	Carlo	Game	Search	(PMCGS)
 This	algorithm	is	the	simplest	form	of	game	tree	search	based	on	randomized	
 rollouts.	It	is	essentially	the	UCT	algorithm	without	a	sophisticated	tree	search	
 policy.	Please	refer	to	https://en.wikipedia.org/wiki/Monte_Carlo_tree_search	for	
@@ -133,8 +144,9 @@ Column	4:	0.24
 Column	5:	Null	
 Column	6:	0.27	
 Column	7:	-0.31
-FINAL	Move	selected:	4		
-Algorithm	4:	Upper	Confidence	bound	for	Trees	(UCT)
+FINAL	Move	selected:	4	
+
+# Algorithm	4:	Upper	Confidence	bound	for	Trees	(UCT)
 The	final	algorithm	builds	on	PMCGS	and	uses	most	of	the	same	structure.	The	only	
 difference	is	in	how	nodes	are	selected	within	the	existing	search	tree;	instead	of	
 selecting	randomly	the	nodes	are	selected	using	the	Upper	Confidence	Bounds	
@@ -201,7 +213,8 @@ Column	5:	Null
 Column	6:	0.27	
 Column	7:	-0.31
 FINAL	Move	selected:	1
-Implementation	Notes
+
+# Implementation	Notes
 You	will	need	to	implement	a	method	that	checks	for	whether	a	game	state	is	a	
 terminal	state	(win	for	either	player	or	a	draw).	You	are	welcome	to	use/adapt	code	
 that	you	find	elsewhere	for	doing	this,	as	long	as	you	cite	(in	the	code)	where	you	
@@ -235,7 +248,8 @@ the	algorithm	specified	on	the	column.
 4)	PMCGS	(10000)		
 5)	UCT	(500)	
 6)	UCT	(10000)
-Part	III:	Enhancements	
+   
+# Part	III:	Enhancements	
 Graduate	student	group	must	implement	at	least	one	of	the	following three	
 enhancements.	Each	additional	one	is	worth	up	to	10	points	of	extra	credit.	For	
 groups	with *only*	undergraduates,	all	of	these	are	worth	up	to	10	points	of	extra	
@@ -250,13 +264,15 @@ simulations.
 3)	Develop	and	test	at	least	one	enhancement	for	the	baseline	depth-limited	MinMax	
 search	(e.g.,	an	improved/more	sophisticated	evaluation function).	Do	experiments	
 to	demonstrate	that	it	improves	significantly	over	the	baseline	version	of	the	
-algorithm.	
-What	to	Turn	In
+algorithm.
+
+# What	to	Turn	In
 You	may implement	your	program	in	either	Java or	Python (or	ask	me	if	you	prefer	
 another	language)	and	turn	in	both	the	source	code	and	an	executable file.	 Your	
 code	must	run	on	the	command	line	as	specified	for	Part	I.	You	may	write	the	code	
 to	run	the	tournaments	and	anything	necessary	for	Part	III	as	a	special	case	in	your	
 code (it	does	not	need	to	run	on	the	command	line).	
+
 In	addition	to	the	code,	turn	in	a	short	report	documenting:
 1)	Group	member	contributions
 2)	What	heuristic	you	implemented	for	DLMM (briefly)
