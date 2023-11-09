@@ -2,8 +2,8 @@
 Workplace for PA2
 
 # CS	4320/5314
-#Programming	Assignment	2: Game	Playing Agents
-#DUE:	Sun,	Nov	12 at	11:59	PM
+# Programming	Assignment	2: Game	Playing Agents
+# DUE:	Sun,	Nov	12 at	11:59	PM
 
 Groups:	You	are	encouraged	to	work	in	a	group	of	two	for	this	assignment;	due	to	
 differences	in	requirements	it	is	preferable	to	have	homogeneous	groups	of	either	
