@@ -2,7 +2,7 @@ package Application;
 import java.util.concurrent.TimeUnit;
 
 import Board.Board;
-import MonteCarloTreeSearch.MonteCarloTreeSearch;
+import PMCGS.MonteCarloTreeSearch;
 
 public class Main{
 
