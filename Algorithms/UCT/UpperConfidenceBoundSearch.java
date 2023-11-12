@@ -41,7 +41,6 @@ public class UpperConfidenceBoundSearch extends Algorithm {
       if(this.root.children[i] != null) {
         if(maxIndex == -1 || this.root.children[i].visits > this.root.children[maxIndex].visits)
           maxIndex = i;
-        // System.out.printf("\nlocation%d: p1wins: %f/%d = %f", i, root.children[i].playerYellowWins, root.children[i].visits, root.children[i].playerYellowWins/root.children[i].visits);
       }
     }
     return maxIndex;

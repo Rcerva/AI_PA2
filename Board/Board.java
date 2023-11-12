@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-// Connect 4 board and utilities
-
 public class Board {
   public final int row;
   public final int col;
@@ -82,13 +80,14 @@ public class Board {
 
     int diskrow = row - 1;
 
-    /*iterate over rows until empty in column until empty               |      col = 3 
-                                                               ->[Y,R,R,Y,O,R,R] row 5 !empty row--
-                                                                 [Y,R,R,Y,O,R,R] row 4 !empty row--
-                                                                 [Y,R,R,Y,O,R,R] row 3 !empty row--
-                                                                 [Y,R,R,O,O,R,R] row 2 <- empty in row 2 so update postion here here
-                                                                 [Y,R,R,O,O,R,R] row 1
-                                                                 [Y,R,R,O,O,R,R] row 0
+    /*iterate over rows until empty in column until empty    
+            |      col = 3 
+    ->[Y,R,R,Y,O,R,R] row 5 !empty row--
+      [Y,R,R,Y,O,R,R] row 4 !empty row--
+      [Y,R,R,Y,O,R,R] row 3 !empty row--
+      [Y,R,R,O,O,R,R] row 2 <- empty in row 2 so update postion here here
+      [Y,R,R,O,O,R,R] row 1
+      [Y,R,R,O,O,R,R] row 0
     */
     while(board[diskrow][column] != EMPTY_SLOT) diskrow--;
     board[diskrow][column] = disk; // replace O with R or Y
@@ -102,7 +101,7 @@ public class Board {
     return next;
   }
 
-  public void loadContents(Character[][] contents) {
+  private void loadContents(Character[][] contents) {
     for(int i = 0; i < row; i++)
       for(int j = 0; j < col; j++)
         this.board[i][j] = contents[i][j];
@@ -114,7 +113,7 @@ public class Board {
   }
 
   //check for hori, vert, and both diags | _ / \
-  public boolean didPlayerWin(int playerDisk) {
+  private boolean didPlayerWin(int playerDisk) {
     // check horizontal _
     int row = board.length;
     int col = board[0].length;
@@ -145,7 +144,7 @@ public class Board {
   }
 
   //iterate through top of board, if top row is full == board is full
-  public boolean isFull() {
+  private boolean isFull() {
     for(int j = 0; j < board[0].length; j++)
       if(board[0][j] == EMPTY_SLOT) return false;
     return true;

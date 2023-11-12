@@ -41,7 +41,6 @@ public class MonteCarloTreeSearch extends Algorithm {
       if(this.root.children[i] != null) {
         if(maxIndex == -1 || this.root.children[i].visits > this.root.children[maxIndex].visits)
           maxIndex = i;
-        // System.out.printf("\nlocation%d: p1wins: %f/%d = %f", i, root.children[i].player1Wins, root.children[i].visits, root.children[i].player1Wins/root.children[i].visits);
       }
     }
     return maxIndex;
@@ -67,8 +66,8 @@ public class MonteCarloTreeSearch extends Algorithm {
         continue;
       MCTSNode currentChild = parent.children[i];
       double wins = parent.board.getNextTurn() == Board.PLAYER_YELLOW_TURN 
-        ? currentChild.player1Wins 
-        : (currentChild.visits-currentChild.player1Wins);
+        ? currentChild.playerYellowWins 
+        : (currentChild.visits-currentChild.playerYellowWins);
       double selectionVal = wins/currentChild.visits 
         + EXPLORATION_PARAMETER*Math.sqrt(Math.log(parent.visits)/currentChild.visits);// UCT
       if(selectionVal > maxSelectionVal) {
@@ -119,7 +118,7 @@ public class MonteCarloTreeSearch extends Algorithm {
     MCTSNode currentNode = expandedNode;
     while(currentNode != null) {
       currentNode.incrementVisits();
-      currentNode.incrementPlayer1Wins(simulationResult);
+      currentNode.incrementPlayerYellowWins(simulationResult);
       currentNode = currentNode.parent;
     }
   }
@@ -129,22 +128,22 @@ public class MonteCarloTreeSearch extends Algorithm {
     // children[i] represents the next game state in which current player places disc at location i
     private MCTSNode[] children;
     private int visits;
-    private double player1Wins;
+    private double playerYellowWins;
     private final Board board;
     public MCTSNode(MCTSNode parent, Board board) {
       this.parent = parent;
       this.board = board;
       this.visits = 0;
-      this.player1Wins = 0;
+      this.playerYellowWins = 0;
       children = new MCTSNode[col];
     }
 
     public int incrementVisits() {
       return ++visits;
     }
-    public double incrementPlayer1Wins(double result) {
-      player1Wins += result;
-      return player1Wins;
+    public double incrementPlayerYellowWins(double result) {
+      playerYellowWins += result;
+      return playerYellowWins;
     }
   }
 }
