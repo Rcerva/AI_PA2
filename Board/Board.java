@@ -37,13 +37,10 @@ public class Board {
     nextTurn = PLAYER_YELLOW_TURN;
   }
 
-  public Board() {
-    this(7, 6);
-  }
 
   public Board(String filename){
-    this.row = 6;
     this.col = 7;
+    this.row = 6;
     board = new Character[row][col];
     try {
       BufferedReader br = new BufferedReader(new FileReader(filename));
@@ -73,21 +70,30 @@ public class Board {
     loadContents(contents);
     this.nextTurn = nextTurn;
   }
-
+  //check if column allows to drop coin in
   public boolean canPlace(int column) {
     return column >= 0 && column < col && board[0][column] == 'O';
   }
 
   public boolean place(int column) {
-    Character disk = (nextTurn == PLAYER_YELLOW_TURN) ? PLAYER_YELLOW_DISK : PLAYER_RED_DISK;
-    if(!canPlace(column))
-      return false;
+    Character disk = (nextTurn == PLAYER_YELLOW_TURN) ? PLAYER_YELLOW_DISK : PLAYER_RED_DISK; //ternary to choose Y or R depending on turn
+    //if can't place at column -> false
+    if(!canPlace(column)) return false;
+
     int diskrow = row - 1;
-    while(board[diskrow][column] != EMPTY_SLOT)
-      diskrow--;
-    board[diskrow][column] = disk;
-    nextTurn = !nextTurn;
-    return true;
+
+    /*iterate over rows until empty in column until empty               |      col = 3 
+                                                               ->[Y,R,R,Y,O,R,R] row 5 !empty row--
+                                                                 [Y,R,R,Y,O,R,R] row 4 !empty row--
+                                                                 [Y,R,R,Y,O,R,R] row 3 !empty row--
+                                                                 [Y,R,R,O,O,R,R] row 2 <- empty in row 2 so update postion here here
+                                                                 [Y,R,R,O,O,R,R] row 1
+                                                                 [Y,R,R,O,O,R,R] row 0
+    */
+    while(board[diskrow][column] != EMPTY_SLOT) diskrow--;
+    board[diskrow][column] = disk; // replace O with R or Y
+    nextTurn = !nextTurn; // Turn is over
+    return true; // finishied placing
   }
 
   public Board getNextState(int column) {
@@ -96,26 +102,20 @@ public class Board {
     return next;
   }
 
-  public Character[][] getContents() {
-    Character[][] contentsCopy = new Character[row][col];
-    for(int i = 0; i < row; i++)
-      for(int j = 0; j < col; j++)
-        contentsCopy[i][j] = board[i][j];
-    return contentsCopy;
-  }
-
   public void loadContents(Character[][] contents) {
     for(int i = 0; i < row; i++)
       for(int j = 0; j < col; j++)
-        board[i][j] = contents[i][j];
+        this.board[i][j] = contents[i][j];
   }
 
+  //make copy of board with constructor that gets the state of the board and the players turn
   public Board copy() {
     return new Board(board, this.nextTurn);
   }
 
+  //check for hori, vert, and both diags | _ / \
   public boolean didPlayerWin(int playerDisk) {
-    // check horizontal
+    // check horizontal _
     int row = board.length;
     int col = board[0].length;
     for(int i = 0; i < row; i++)
@@ -123,19 +123,19 @@ public class Board {
         for(int k = j; k < j + 4 && board[i][k] == playerDisk; k++)
           if(k == j+3)
             return true;
-    // check vertical
+    // check vertical |
     for(int i = 0; i < row - 3; i++)
       for(int j = 0; j < col; j++)
         for(int k = i; k < i + 4 && board[k][j] == playerDisk; k++)
           if(k == i+3)
             return true;
-    // check diagonal down right
+    // check diagonal down right \
     for(int i = 0; i < row - 3; i++)
       for(int j = 0; j < col - 3; j++)
         for(int k = 0; k < 4 && board[i+k][j+k] == playerDisk; k++)
           if(k == 3)
             return true;
-    // check diagonal down
+    // check diagonal down /
     for(int i = 0; i < row - 3; i++)
       for(int j = 3; j < col; j++)
         for(int k = 0; k < 4 && board[i+k][j-k] == playerDisk; k++)
@@ -144,18 +144,27 @@ public class Board {
     return false;
   }
 
+  //iterate through top of board, if top row is full == board is full
   public boolean isFull() {
     for(int j = 0; j < board[0].length; j++)
-      if(board[board.length-1][j] == EMPTY_SLOT) return false;
+      if(board[0][j] == EMPTY_SLOT) return false;
     return true;
   }
 
-   public int currentGameState() {
+  //get current state
+  public int currentGameState() {
+    //if player yellow won -> retun that yellow won
+    //elseif player red won -> retun that red won
+    //elseif the board is full, it is a draw
+    //else it has to be an on going game
     return this.didPlayerWin(PLAYER_YELLOW_DISK) ? PLAYER_YELLOW_WON
       : this.didPlayerWin(PLAYER_RED_DISK) ? PLAYER_RED_WON
       : this.isFull() ? TIE
       : ONGOING;
   }
+
+
+  //Getters / Setters
 
   public boolean getNextTurn() {
     return nextTurn;
@@ -179,6 +188,7 @@ public class Board {
     return this.team;
   }
 
+  //print(board) () -> {}
   @Override
   public String toString() {
     String result = "|-";
