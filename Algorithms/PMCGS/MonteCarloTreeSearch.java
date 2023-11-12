@@ -1,15 +1,21 @@
 // Monte Carlo Tree Search for Connect 4
-package PMCGS;
+package Algorithms.PMCGS;
 
 import java.util.ArrayList;
 import Board.Board;
+import Algorithms.Algorithm;
 
-public class MonteCarloTreeSearch {
+public class MonteCarloTreeSearch extends Algorithm {
   
   private MCTSNode root; // starting state
   private final int col;
   private static final double EXPLORATION_PARAMETER = Math.sqrt(2);
   private long givenTime;
+
+  public static class MonteCarlo{
+
+
+  }
   
   public MonteCarloTreeSearch(Board board, long givenTime) {
     this.col = board.col;
@@ -57,6 +63,7 @@ public class MonteCarloTreeSearch {
         return parent;
       }
     }
+    
     // if all children have statistics, use UCT to select next node to visit
     double maxSelectionVal = -1;
     int maxIndex = -1;

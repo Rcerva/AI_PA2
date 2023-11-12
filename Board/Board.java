@@ -12,8 +12,8 @@ public class Board {
   private Character[][] board;
   private boolean nextTurn;
   private String algorithm;
-  private String param;
-  private String team;
+  private int param;
+  private Character team;
 
   // board contents
   public static final Character EMPTY_SLOT = 'O';
@@ -25,10 +25,10 @@ public class Board {
   public static final boolean PLAYER_RED_TURN = false;
 
   // game state
-  public static final int ONGOING = 0;
+  public static final int ONGOING = 2;
   public static final int PLAYER_YELLOW_WON = 1;
-  public static final int PLAYER_RED_WON = 2;
-  public static final int TIE = 3;
+  public static final int PLAYER_RED_WON = -1;
+  public static final int TIE = 0;
 
   public Board(int col, int row) {
     this.col = col;
@@ -44,14 +44,15 @@ public class Board {
   public Board(String filename){
     this.row = 6;
     this.col = 7;
+    board = new Character[row][col];
     try {
       BufferedReader br = new BufferedReader(new FileReader(filename));
 
       //Read first 3 lines for algorithm and param and color
 
       this.algorithm = br.readLine();
-      this.param = br.readLine();
-      this.team = br.readLine();
+      this.param = Integer.parseInt(br.readLine());
+      this.team = br.readLine().charAt(0);
 
       // Read the board grid
       for (int i = 0; i < 6; i++) {
@@ -160,15 +161,21 @@ public class Board {
     return nextTurn;
   }
 
-  public String getAlgorithm(){
-    return this.algorithm;
+  public boolean isTurn(){
+    if(this.nextTurn == PLAYER_YELLOW_TURN && this.team == 'Y') return true;
+    else if(this.nextTurn == PLAYER_RED_TURN && this.team == 'R') return true;
+    return false;
   }
 
-  public String getParameter(){
+  public String getAlgorithm(){
+    return this.algorithm.toUpperCase();
+  }
+
+  public int getParameter(){
     return this.param;
   }
 
-  public String getTeam(){
+  public Character getTeam(){
     return this.team;
   }
 
@@ -182,7 +189,7 @@ public class Board {
     for(int i = 0; i < row; i++) {
       result += "| ";
       for(int j = 0; j < col; j++) {
-        result += (board[i][j] == EMPTY_SLOT ? " " : (board[i][j] == 1 ? "\u2B55" : "\u274E"))+" | ";
+        result += (board[i][j] == EMPTY_SLOT ? " " : (board[i][j] == 'Y' ? "Y" : "R"))+" | ";
       }
       result = result.substring(0, result.length()-1);
       result += "\n|-";
