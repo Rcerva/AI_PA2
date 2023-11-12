@@ -34,6 +34,7 @@ public class Main{
     challengeAis( board, GIVEN_TIME, ai,opponent);
   }
 
+
   public static int challengeAis(Board board, long GIVEN_TIME, Algorithm ai, Algorithm opponent){
     if(opponent == null){ System.out.println("Invalid Opponent Parameter"); return -1;}
     while(board.currentGameState() == Board.ONGOING) {
@@ -74,6 +75,7 @@ public class Main{
     return gameState;
   }
 
+
   public static Algorithm getTheAlgorithm(Board board, long GIVEN_TIME){
      switch(board.getAlgorithm()){
       case UR_alg:
@@ -98,6 +100,7 @@ public class Main{
     return null;
   }
 
+  
   public static Algorithm getOpponent(Board board, long GIVEN_TIME){
     switch(board.getParameter()) {
       case UR:

@@ -35,32 +35,11 @@ public class Board {
     nextTurn = PLAYER_YELLOW_TURN;
   }
 
-
   public Board(String filename){
     this.col = 7;
     this.row = 6;
     board = new Character[row][col];
-    try {
-      BufferedReader br = new BufferedReader(new FileReader(filename));
-
-      //Read first 3 lines for algorithm and param and color
-
-      this.algorithm = br.readLine();
-      this.param = Integer.parseInt(br.readLine());
-      this.team = br.readLine().charAt(0);
-
-      // Read the board grid
-      for (int i = 0; i < 6; i++) {
-        String row = br.readLine();
-        for (int j = 0; j < 7; j++) {
-          board[i][j] = row.charAt(j);
-        }
-      }
-
-      br.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    fileIngestor(filename);
   }
 
   public Board(Character[][] contents, boolean nextTurn) {
@@ -68,6 +47,7 @@ public class Board {
     loadContents(contents);
     this.nextTurn = nextTurn;
   }
+
   //check if column allows to drop coin in
   public boolean canPlace(int column) {
     return column >= 0 && column < col && board[0][column] == 'O';
@@ -120,26 +100,23 @@ public class Board {
     for(int i = 0; i < row; i++)
       for(int j = 0; j < col - 3; j++)
         for(int k = j; k < j + 4 && board[i][k] == playerDisk; k++)
-          if(k == j+3)
-            return true;
+          if(k == j+3) return true;
     // check vertical |
     for(int i = 0; i < row - 3; i++)
       for(int j = 0; j < col; j++)
         for(int k = i; k < i + 4 && board[k][j] == playerDisk; k++)
-          if(k == i+3)
-            return true;
+          if(k == i+3) return true;
     // check diagonal down right \
     for(int i = 0; i < row - 3; i++)
       for(int j = 0; j < col - 3; j++)
         for(int k = 0; k < 4 && board[i+k][j+k] == playerDisk; k++)
-          if(k == 3)
-            return true;
+          if(k == 3) return true;
     // check diagonal down /
     for(int i = 0; i < row - 3; i++)
       for(int j = 3; j < col; j++)
         for(int k = 0; k < 4 && board[i+k][j-k] == playerDisk; k++)
-          if(k == 3)
-            return true;
+          if(k == 3) return true;
+
     return false;
   }
 
@@ -162,17 +139,17 @@ public class Board {
       : ONGOING;
   }
 
+  //check if it is the alogorithms turn
+  public boolean isTurn(){
+    if(this.nextTurn == PLAYER_YELLOW_TURN && this.team == 'Y') return true;
+    else if(this.nextTurn == PLAYER_RED_TURN && this.team == 'R') return true;
+    return false;
+  }
 
   //Getters / Setters
 
   public boolean getNextTurn() {
     return nextTurn;
-  }
-
-  public boolean isTurn(){
-    if(this.nextTurn == PLAYER_YELLOW_TURN && this.team == 'Y') return true;
-    else if(this.nextTurn == PLAYER_RED_TURN && this.team == 'R') return true;
-    return false;
   }
 
   public String getAlgorithm(){
@@ -187,24 +164,40 @@ public class Board {
     return this.team;
   }
 
+  private void fileIngestor(String filename){
+    try {
+      BufferedReader br = new BufferedReader(new FileReader(filename));
+
+      //Read first 3 lines for algorithm and param and color
+
+      this.algorithm = br.readLine();
+      this.param = Integer.parseInt(br.readLine());
+      this.team = br.readLine().charAt(0);
+
+      // Read the board grid
+      for (int i = 0; i < 6; i++) {
+        String row = br.readLine();
+        for (int j = 0; j < 7; j++) this.board[i][j] = row.charAt(j);
+      }
+
+      br.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
   //print(board) () -> {}
   @Override
   public String toString() {
     String result = "|-";
-    for(int j = 0; j < col; j++) {
-      result += "--|-";
-    }
+    for(int j = 0; j < col; j++) result += "--|-";
     result = result.substring(0, result.length()-1) + "\n";
     for(int i = 0; i < row; i++) {
       result += "| ";
-      for(int j = 0; j < col; j++) {
-        result += (board[i][j] == EMPTY_SLOT ? " " : (board[i][j] == 'Y' ? "Y" : "R"))+" | ";
-      }
+      for(int j = 0; j < col; j++) result += (board[i][j] == EMPTY_SLOT ? " " : (board[i][j] == 'Y' ? "Y" : "R"))+" | ";
       result = result.substring(0, result.length()-1);
       result += "\n|-";
-      for(int j = 0; j < col; j++) {
-        result += "--|-";
-      }
+      for(int j = 0; j < col; j++) result += "--|-";
       result = result.substring(0, result.length()-1);
       result += "\n";
     }
