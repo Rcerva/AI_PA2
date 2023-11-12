@@ -1,37 +1,37 @@
-// Monte Carlo Tree Search for Connect 4
-package Algorithms.PMCGS;
+package Algorithms.UCT;
 
 import java.util.ArrayList;
-import Board.Board;
-import Algorithms.Algorithm;
 
-public class MonteCarloTreeSearch extends Algorithm {
+import Algorithms.Algorithm;
+import Board.Board;
+
+public class UpperConfidenceBoundSearch extends Algorithm {
   
-  private MCTSNode root; // starting state
+  private UCTNode root; // starting state
   private final int col;
   private static final double EXPLORATION_PARAMETER = Math.sqrt(2);
   private long givenTime;
   
-  public MonteCarloTreeSearch(Board board, long givenTime) {
+  public UpperConfidenceBoundSearch(Board board, long givenTime) {
     this.col = board.col;
     this.givenTime = givenTime;
-    this.root = new MCTSNode(null, board.copy());
+    this.root = new UCTNode(null, board.copy());
   }
 
   // sets root to new board state given move
   public void update(int move) {
         this.root = this.root.children[move] != null 
         ? this.root.children[move] 
-        : new MCTSNode(null, this.root.board.getNextState(move));
+        : new UCTNode(null, this.root.board.getNextState(move));
   }
 
   // returns the optimal move for the current player
   public int getOptimalMove() {
     for (long stop = System.nanoTime()+givenTime; stop>System.nanoTime();) {
-      MCTSNode selectedNode = select();
+      UCTNode selectedNode = select();
       if(selectedNode == null)
         continue;
-      MCTSNode expandedNode = expand(selectedNode);
+      UCTNode expandedNode = expand(selectedNode);
       double result = simulate(expandedNode);
       backpropagate(expandedNode, result);
     }
@@ -41,17 +41,17 @@ public class MonteCarloTreeSearch extends Algorithm {
       if(this.root.children[i] != null) {
         if(maxIndex == -1 || this.root.children[i].visits > this.root.children[maxIndex].visits)
           maxIndex = i;
-        // System.out.printf("\nlocation%d: p1wins: %f/%d = %f", i, root.children[i].player1Wins, root.children[i].visits, root.children[i].player1Wins/root.children[i].visits);
+        // System.out.printf("\nlocation%d: p1wins: %f/%d = %f", i, root.children[i].playerYellowWins, root.children[i].visits, root.children[i].playerYellowWins/root.children[i].visits);
       }
     }
     return maxIndex;
   }
 
-  private MCTSNode select() {
+  private UCTNode select() {
     return select(this.root);
   }
 
-  private MCTSNode select(MCTSNode parent) {
+  private UCTNode select(UCTNode parent) {
     // if parent has at least child without statistics, select parent
     for(int i = 0; i < col; i++) {
       if(parent.children[i] == null && parent.board.canPlace(i)) {
@@ -65,10 +65,10 @@ public class MonteCarloTreeSearch extends Algorithm {
     for(int i = 0; i < col; i++) {
       if(!parent.board.canPlace(i))
         continue;
-      MCTSNode currentChild = parent.children[i];
+      UCTNode currentChild = parent.children[i];
       double wins = parent.board.getNextTurn() == Board.PLAYER_YELLOW_TURN 
-        ? currentChild.player1Wins 
-        : (currentChild.visits-currentChild.player1Wins);
+        ? currentChild.playerYellowWins 
+        : (currentChild.visits-currentChild.playerYellowWins);
       double selectionVal = wins/currentChild.visits 
         + EXPLORATION_PARAMETER*Math.sqrt(Math.log(parent.visits)/currentChild.visits);// UCT
       if(selectionVal > maxSelectionVal) {
@@ -82,7 +82,7 @@ public class MonteCarloTreeSearch extends Algorithm {
     return select(parent.children[maxIndex]);
   }
 
-  private MCTSNode expand(MCTSNode selectedNode) {
+  private UCTNode expand(UCTNode selectedNode) {
     // get unvisited child nodes
     ArrayList<Integer> unvisitedChildrenIndices = new ArrayList<Integer>(col);
     for(int i = 0; i < col; i++) {
@@ -93,12 +93,12 @@ public class MonteCarloTreeSearch extends Algorithm {
 
     // randomly select unvisited child and create node for it
     int selectedIndex = unvisitedChildrenIndices.get((int)(Math.random()*unvisitedChildrenIndices.size()));
-    selectedNode.children[selectedIndex] = new MCTSNode(selectedNode, selectedNode.board.getNextState(selectedIndex));
+    selectedNode.children[selectedIndex] = new UCTNode(selectedNode, selectedNode.board.getNextState(selectedIndex));
     return selectedNode.children[selectedIndex];
   } 
 
   // returns result of simulation
-  private double simulate(MCTSNode expandedNode) {
+  private double simulate(UCTNode expandedNode) {
     Board simulationBoard = expandedNode.board.copy();
     while(simulationBoard.currentGameState() == Board.ONGOING) {
       simulationBoard.place((int)(Math.random()*col));
@@ -115,36 +115,36 @@ public class MonteCarloTreeSearch extends Algorithm {
     }
   }
 
-  private void backpropagate(MCTSNode expandedNode, double simulationResult) {
-    MCTSNode currentNode = expandedNode;
+  private void backpropagate(UCTNode expandedNode, double simulationResult) {
+    UCTNode currentNode = expandedNode;
     while(currentNode != null) {
       currentNode.incrementVisits();
-      currentNode.incrementPlayer1Wins(simulationResult);
+      currentNode.incrementPlayerYellowWins(simulationResult);
       currentNode = currentNode.parent;
     }
   }
+  
 
-  private class MCTSNode {
-    private MCTSNode parent;
-    // children[i] represents the next game state in which current player places disc at location i
-    private MCTSNode[] children;
+  private class UCTNode {
+    private UCTNode parent;
+    private UCTNode[] children;
     private int visits;
-    private double player1Wins;
+    private double playerYellowWins;
     private final Board board;
-    public MCTSNode(MCTSNode parent, Board board) {
+    public UCTNode(UCTNode parent, Board board) {
       this.parent = parent;
       this.board = board;
       this.visits = 0;
-      this.player1Wins = 0;
-      children = new MCTSNode[col];
+      this.playerYellowWins = 0;
+      children = new UCTNode[col];
     }
 
     public int incrementVisits() {
       return ++visits;
     }
-    public double incrementPlayer1Wins(double result) {
-      player1Wins += result;
-      return player1Wins;
+    public double incrementPlayerYellowWins(double result) {
+      playerYellowWins += result;
+      return playerYellowWins;
     }
   }
 }

@@ -3,6 +3,7 @@ import java.util.concurrent.TimeUnit;
 
 import Algorithms.Algorithm;
 import Algorithms.PMCGS.MonteCarloTreeSearch;
+import Algorithms.UCT.UpperConfidenceBoundSearch;
 import Board.Board;
 
 public class Main{
@@ -33,7 +34,7 @@ public class Main{
     challengeAis( board, GIVEN_TIME, ai,opponent);
   }
 
-  public static int challengeAis(Board board, long GIVEN_TIME, Algorithm ai,Algorithm opponent){
+  public static int challengeAis(Board board, long GIVEN_TIME, Algorithm ai, Algorithm opponent){
     if(opponent == null){ System.out.println("Invalid Opponent Parameter"); return -1;}
     while(board.currentGameState() == Board.ONGOING) {
       System.out.println("\n\n"+board);
@@ -89,8 +90,7 @@ public class Main{
 
       case UCT_alg:
         System.out.println("Alogrithm: UCT.\n");
-        // return new UCT();
-        break;
+        return new UpperConfidenceBoundSearch(board, GIVEN_TIME);
       default:
         return null;
 
@@ -116,12 +116,10 @@ public class Main{
         return new MonteCarloTreeSearch(board, GIVEN_TIME);
       case UCT_500:
         System.out.println("Challenger: UCT_500.\n");
-        // return new UCT();
-        break;
+        return new UpperConfidenceBoundSearch(board, GIVEN_TIME);
       case UCT_10000:
         System.out.println("Challenger: UCT_10000.\n");
-        // return new UCT();
-        break;
+        return new UpperConfidenceBoundSearch(board, GIVEN_TIME);
       default:
         System.out.println("No Challenger.\n");
         return null;
