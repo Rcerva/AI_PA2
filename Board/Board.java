@@ -31,7 +31,8 @@ public class Board {
   public Board(int col, int row) {
     this.col = col;
     this.row = row;
-    board = new Character[row][col]; // default all 0
+    this.board = new Character[row][col]; // default all 0
+    intializeBoard();
     nextTurn = PLAYER_YELLOW_TURN;
   }
 
@@ -48,15 +49,23 @@ public class Board {
     this.nextTurn = nextTurn;
   }
 
-  //check if column allows to drop coin in
-  public boolean canPlace(int column) {
-    return column >= 0 && column < col && board[0][column] == 'O';
+  public Board() {
+    this(7, 6);
   }
 
-  public boolean place(int column) {
+  private void intializeBoard() {
+    for(int i = 0; i < this.board.length; i++)
+      for(int j = 0; j < this.board[0].length; j++) this.board[i][j] = 'O';
+  }
+  //check if column allows to drop coin in
+  public boolean canPlace(int column) {
+    return column >= 0 && column < col && this.board[0][column] == 'O';
+  }
+
+  public void place(int column) {
     Character disk = (nextTurn == PLAYER_YELLOW_TURN) ? PLAYER_YELLOW_DISK : PLAYER_RED_DISK; //ternary to choose Y or R depending on turn
     //if can't place at column -> false
-    if(!canPlace(column)) return false;
+    if(!canPlace(column)) return;
 
     int diskrow = row - 1;
 
@@ -70,9 +79,9 @@ public class Board {
       [Y,R,R,O,O,R,R] row 0
     */
     while(board[diskrow][column] != EMPTY_SLOT) diskrow--;
-    board[diskrow][column] = disk; // replace O with R or Y
+    this.board[diskrow][column] = disk; // replace O with R or Y
     nextTurn = !nextTurn; // Turn is over
-    return true; // finishied placing
+    return; // finishied placing
   }
 
   public Board getNextState(int column) {
@@ -89,32 +98,32 @@ public class Board {
 
   //make copy of board with constructor that gets the state of the board and the players turn
   public Board copy() {
-    return new Board(board, this.nextTurn);
+    return new Board(this.board, this.nextTurn);
   }
 
   //check for hori, vert, and both diags | _ / \
   private boolean didPlayerWin(int playerDisk) {
     // check horizontal _
-    int row = board.length;
-    int col = board[0].length;
+    int row = this.board.length;
+    int col = this.board[0].length;
     for(int i = 0; i < row; i++)
       for(int j = 0; j < col - 3; j++)
-        for(int k = j; k < j + 4 && board[i][k] == playerDisk; k++)
+        for(int k = j; k < j + 4 && this.board[i][k] == playerDisk; k++)
           if(k == j+3) return true;
     // check vertical |
     for(int i = 0; i < row - 3; i++)
       for(int j = 0; j < col; j++)
-        for(int k = i; k < i + 4 && board[k][j] == playerDisk; k++)
+        for(int k = i; k < i + 4 &&this.board[k][j] == playerDisk; k++)
           if(k == i+3) return true;
     // check diagonal down right \
     for(int i = 0; i < row - 3; i++)
       for(int j = 0; j < col - 3; j++)
-        for(int k = 0; k < 4 && board[i+k][j+k] == playerDisk; k++)
+        for(int k = 0; k < 4 &&this.board[i+k][j+k] == playerDisk; k++)
           if(k == 3) return true;
     // check diagonal down /
     for(int i = 0; i < row - 3; i++)
       for(int j = 3; j < col; j++)
-        for(int k = 0; k < 4 && board[i+k][j-k] == playerDisk; k++)
+        for(int k = 0; k < 4 &&this.board[i+k][j-k] == playerDisk; k++)
           if(k == 3) return true;
 
     return false;
@@ -122,7 +131,7 @@ public class Board {
 
   //iterate through top of board, if top row is full == board is full
   private boolean isFull() {
-    for(int j = 0; j < board[0].length; j++)
+    for(int j = 0; j <this.board[0].length; j++)
       if(board[0][j] == EMPTY_SLOT) return false;
     return true;
   }
@@ -162,6 +171,10 @@ public class Board {
 
   public Character getTeam(){
     return this.team;
+  }
+
+  public Character setTeam(Character team){
+    return this.team = team;
   }
 
   private void fileIngestor(String filename){

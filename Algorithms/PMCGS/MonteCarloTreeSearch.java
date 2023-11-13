@@ -9,17 +9,18 @@ public class MonteCarloTreeSearch extends Algorithm {
   
   private MCTSNode root; // starting state
   private final int col;
-  private static final double EXPLORATION_PARAMETER = Math.sqrt(2);
+  private double EXPLORATION_PARAMETER;
   private long givenTime;
   
-  public MonteCarloTreeSearch(Board board, long givenTime) {
+  public MonteCarloTreeSearch(Board board, long time, int param) {
     this.col = board.col;
-    this.givenTime = givenTime;
+    this.EXPLORATION_PARAMETER = param;
+    this.givenTime = time;
     this.root = new MCTSNode(null, board.copy());
   }
 
   // sets root to new board state given move
-  public void update(int move) {
+  public void updateRoot(int move) {
         this.root = this.root.children[move] != null 
         ? this.root.children[move] 
         : new MCTSNode(null, this.root.board.getNextState(move));

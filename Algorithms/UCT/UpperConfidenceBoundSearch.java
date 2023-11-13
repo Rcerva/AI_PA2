@@ -1,25 +1,25 @@
 package Algorithms.UCT;
 
 import java.util.ArrayList;
-
-import Algorithms.Algorithm;
 import Board.Board;
+import Algorithms.Algorithm;
 
 public class UpperConfidenceBoundSearch extends Algorithm {
   
   private UCTNode root; // starting state
   private final int col;
-  private static final double EXPLORATION_PARAMETER = Math.sqrt(2);
+  private double EXPLORATION_PARAMETER;
   private long givenTime;
   
-  public UpperConfidenceBoundSearch(Board board, long givenTime) {
+  public UpperConfidenceBoundSearch(Board board, long time, double param) {
     this.col = board.col;
-    this.givenTime = givenTime;
+    this.EXPLORATION_PARAMETER = param;
+    this.givenTime = time;
     this.root = new UCTNode(null, board.copy());
   }
 
   // sets root to new board state given move
-  public void update(int move) {
+  public void updateRoot(int move) {
         this.root = this.root.children[move] != null 
         ? this.root.children[move] 
         : new UCTNode(null, this.root.board.getNextState(move));
@@ -28,12 +28,12 @@ public class UpperConfidenceBoundSearch extends Algorithm {
   // returns the optimal move for the current player
   public int getOptimalMove() {
     for (long stop = System.nanoTime()+givenTime; stop>System.nanoTime();) {
-      UCTNode selectedNode = select();
+      UCTNode selectedNode = select(this.root);
       if(selectedNode == null)
         continue;
-      UCTNode expandedNode = expand(selectedNode);
-      double result = simulate(expandedNode);
-      backpropagate(expandedNode, result);
+      UCTNode expandNode = expand(selectedNode);
+      double result = simulate(expandNode);
+      backpropagate(expandNode, result);
     }
 
     int maxIndex = -1;
@@ -44,10 +44,6 @@ public class UpperConfidenceBoundSearch extends Algorithm {
       }
     }
     return maxIndex;
-  }
-
-  private UCTNode select() {
-    return select(this.root);
   }
 
   private UCTNode select(UCTNode parent) {
@@ -66,8 +62,8 @@ public class UpperConfidenceBoundSearch extends Algorithm {
         continue;
       UCTNode currentChild = parent.children[i];
       double wins = parent.board.getNextTurn() == Board.PLAYER_YELLOW_TURN 
-        ? currentChild.playerYellowWins 
-        : (currentChild.visits-currentChild.playerYellowWins);
+        ? currentChild.playerWins 
+        : (currentChild.visits-currentChild.playerWins);
       double selectionVal = wins/currentChild.visits 
         + EXPLORATION_PARAMETER*Math.sqrt(Math.log(parent.visits)/currentChild.visits);// UCT
       if(selectionVal > maxSelectionVal) {
@@ -97,14 +93,16 @@ public class UpperConfidenceBoundSearch extends Algorithm {
   } 
 
   // returns result of simulation
-  private double simulate(UCTNode expandedNode) {
-    Board simulationBoard = expandedNode.board.copy();
-    while(simulationBoard.currentGameState() == Board.ONGOING) {
-      simulationBoard.place((int)(Math.random()*col));
+  private double simulate(UCTNode expandNode) {
+    //copy of board
+    Board simBoard = expandNode.board.copy();
+    //keep simulating until terminal state
+    while(simBoard.currentGameState() == Board.ONGOING) {
+      int random = (int)(Math.random());
+      simBoard.place(random*col);
     }
-      // System.out.println(simulationBoard);
 
-    switch(simulationBoard.currentGameState()) {
+    switch(simBoard.currentGameState()) {
       case Board.PLAYER_YELLOW_WON:
         return 1;
       case Board.PLAYER_RED_WON:
@@ -114,36 +112,39 @@ public class UpperConfidenceBoundSearch extends Algorithm {
     }
   }
 
-  private void backpropagate(UCTNode expandedNode, double simulationResult) {
-    UCTNode currentNode = expandedNode;
-    while(currentNode != null) {
-      currentNode.incrementVisits();
-      currentNode.incrementPlayerYellowWins(simulationResult);
-      currentNode = currentNode.parent;
+  private void backpropagate(UCTNode expandNode, double simulationResult) {
+    UCTNode currNode = expandNode;
+    while(currNode != null) {
+      //update visits
+      currNode.incrVisits();
+      //update score
+      currNode.incrPlayerWins(simulationResult);
+      //go back to prev parent node
+      currNode = currNode.parent;
     }
   }
-  
 
   private class UCTNode {
     private UCTNode parent;
+    // children[i] represents the next game state in which current player places disc at location i
     private UCTNode[] children;
     private int visits;
-    private double playerYellowWins;
+    private double playerWins;
     private final Board board;
     public UCTNode(UCTNode parent, Board board) {
       this.parent = parent;
       this.board = board;
       this.visits = 0;
-      this.playerYellowWins = 0;
+      this.playerWins = 0;
       children = new UCTNode[col];
     }
 
-    public int incrementVisits() {
+    public int incrVisits() {
       return ++visits;
     }
-    public double incrementPlayerYellowWins(double result) {
-      playerYellowWins += result;
-      return playerYellowWins;
+    public double incrPlayerWins(double result) {
+      playerWins += result;
+      return playerWins;
     }
   }
 }
