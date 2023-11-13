@@ -9,9 +9,11 @@ public class Board {
   public final int col;
   private Character[][] board;
   private boolean nextTurn;
+  private String print = "None";
   private String algorithm;
   private int param;
   private Character team;
+ 
 
   // board contents
   public static final Character EMPTY_SLOT = 'O';
@@ -31,20 +33,32 @@ public class Board {
   public Board(int col, int row) {
     this.col = col;
     this.row = row;
+
     this.board = new Character[row][col]; // default all 0
     intializeBoard();
     nextTurn = PLAYER_YELLOW_TURN;
   }
 
-  public Board(String filename){
+  public Board(int col, int row, String print) {
+    this.col = col;
+    this.row = row;
+    this.print = print;
+
+    this.board = new Character[row][col]; // default all 0
+    intializeBoard();
+    nextTurn = PLAYER_YELLOW_TURN;
+  }
+
+  public Board(String filename, String print){
     this.col = 7;
     this.row = 6;
+    this.print = print;
     board = new Character[row][col];
     fileIngestor(filename);
   }
 
-  public Board(Character[][] contents, boolean nextTurn) {
-    this(contents[0].length, contents.length);
+  public Board(Character[][] contents, boolean nextTurn, String print) {
+    this(contents[0].length, contents.length, print);
     loadContents(contents);
     this.nextTurn = nextTurn;
   }
@@ -98,7 +112,7 @@ public class Board {
 
   //make copy of board with constructor that gets the state of the board and the players turn
   public Board copy() {
-    return new Board(this.board, this.nextTurn);
+    return new Board(this.board, this.nextTurn, this.print);
   }
 
   //check for hori, vert, and both diags | _ / \
@@ -173,8 +187,12 @@ public class Board {
     return this.team;
   }
 
-  public Character setTeam(Character team){
-    return this.team = team;
+  public void setTeam(Character team){
+    this.team = team;
+  }
+
+  public String getPrint(){
+    return this.print;
   }
 
   private void fileIngestor(String filename){

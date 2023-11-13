@@ -11,7 +11,7 @@ public class UpperConfidenceBoundSearch extends Algorithm {
   private double EXPLORATION_PARAMETER;
   private long givenTime;
   
-  public UpperConfidenceBoundSearch(Board board, long time, double param) {
+  public UpperConfidenceBoundSearch(Board board, long time, int param) {
     this.col = board.col;
     this.EXPLORATION_PARAMETER = param;
     this.givenTime = time;
@@ -32,7 +32,8 @@ public class UpperConfidenceBoundSearch extends Algorithm {
       if(selectedNode == null)
         continue;
       UCTNode expandNode = expand(selectedNode);
-      double result = simulate(expandNode);
+      int result = simulate(expandNode);
+      if(this.root.board.getPrint().equals("verbose")) System.out.println("TERMINAL NODE VALUE: " + result +"\n");
       backpropagate(expandNode, result);
     }
 
@@ -43,6 +44,7 @@ public class UpperConfidenceBoundSearch extends Algorithm {
           maxIndex = i;
       }
     }
+    if(this.root.board.getPrint().equals("verbose")) System.out.println("Final Move Selected: " + maxIndex);
     return maxIndex;
   }
 
@@ -64,6 +66,10 @@ public class UpperConfidenceBoundSearch extends Algorithm {
       double wins = parent.board.getNextTurn() == Board.PLAYER_YELLOW_TURN 
         ? currentChild.playerWins 
         : (currentChild.visits-currentChild.playerWins);
+        if(this.root.board.getPrint().equals("verbose")) {
+          System.out.println("\nwi: " + wins);
+          System.out.println("ni: " + currentChild.visits);
+        }
       double selectionVal = wins/currentChild.visits 
         + EXPLORATION_PARAMETER*Math.sqrt(Math.log(parent.visits)/currentChild.visits);// UCT
       if(selectionVal > maxSelectionVal) {
@@ -74,6 +80,7 @@ public class UpperConfidenceBoundSearch extends Algorithm {
     // SOMETIMES -1???
     if(maxIndex == -1)
       return null;
+    if(this.root.board.getPrint().equals("verbose"))System.out.println("Move Selected: " + maxIndex);
     return select(parent.children[maxIndex]);
   }
 
@@ -88,27 +95,27 @@ public class UpperConfidenceBoundSearch extends Algorithm {
 
     // randomly select unvisited child and create node for it
     int selectedIndex = unvisitedChildrenIndices.get((int)(Math.random()*unvisitedChildrenIndices.size()));
+    if(this.root.board.getPrint().equals("verbose"))System.out.println("Node Added\n");
     selectedNode.children[selectedIndex] = new UCTNode(selectedNode, selectedNode.board.getNextState(selectedIndex));
     return selectedNode.children[selectedIndex];
   } 
 
   // returns result of simulation
-  private double simulate(UCTNode expandNode) {
+  private int simulate(UCTNode expandNode) {
     //copy of board
     Board simBoard = expandNode.board.copy();
     //keep simulating until terminal state
     while(simBoard.currentGameState() == Board.ONGOING) {
-      int random = (int)(Math.random());
-      simBoard.place(random*col);
+      simBoard.place((int)(Math.random()*col));
     }
 
     switch(simBoard.currentGameState()) {
       case Board.PLAYER_YELLOW_WON:
         return 1;
       case Board.PLAYER_RED_WON:
-        return 0;
+        return -1;
       default:
-        return 0.5;
+        return 0;
     }
   }
 
@@ -116,9 +123,15 @@ public class UpperConfidenceBoundSearch extends Algorithm {
     UCTNode currNode = expandNode;
     while(currNode != null) {
       //update visits
-      currNode.incrVisits();
+      if(this.root.board.getPrint().equals("verbose")){
+        System.out.println("Updated values:");
+        System.out.println("wi: " + currNode.incrPlayerWins(simulationResult)); 
+        System.out.println("ni: " + currNode.incrVisits()+"\n"); 
+      }else{
+        currNode.incrPlayerWins(simulationResult);
+        currNode.incrVisits();
+      }
       //update score
-      currNode.incrPlayerWins(simulationResult);
       //go back to prev parent node
       currNode = currNode.parent;
     }

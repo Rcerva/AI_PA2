@@ -18,12 +18,15 @@ public class Main{
 
     Algorithm ai;
     Algorithm opponent;
+    String fileName;
+    String print;
 
     final long GIVEN_TIME = TimeUnit.SECONDS.toNanos(args.length > 0 ? Integer.parseInt(args[0]) : 2);
     
     //Test Algorithms part1
-    String fileName = "test3.txt"; 
-    Board board = new Board(fileName);
+    fileName = "test4.txt"; 
+    print = "Verbose";
+    Board board = new Board(fileName, print.toLowerCase());
     ai = getTheAlgorithm(board, GIVEN_TIME);
     opponent = getTheAlgorithm(board, GIVEN_TIME);
     challengeAis(board, ai, opponent);
@@ -44,7 +47,7 @@ public class Main{
 
 
   public static int challengeAis(Board board, Algorithm ai, Algorithm opponent){
-    if(opponent == null || ai == null){ System.out.println("Invalid Opponent Parameter"); return -1;}
+    if(opponent == null || ai == null)return -1;
     while(board.currentGameState() == Board.ONGOING) {
       System.out.println("\n\n"+board);
       int moveColumn;
@@ -85,19 +88,19 @@ public class Main{
   public static Algorithm getTheAlgorithm(Board board, long GIVEN_TIME){
      switch(board.getAlgorithm()){
       case UR:
-        System.out.println("Alogrithm: UR.\n");
+        System.out.println("Alogrithm: UR.");
         // return new UR();
         break;
       case DLMM:
-        System.out.println("Alogrithm: DLMM.\n");
+        System.out.println("Alogrithm: DLMM.");
         // return new DLMM();
         break;
       case PMCGS:
-        System.out.println("Alogrithm: PMCGS.\n");
+        System.out.println("Alogrithm: PMCGS.");
         return new MonteCarloTreeSearch(board, GIVEN_TIME, board.getParameter());
 
       case UCT:
-        System.out.println("Alogrithm: UCT.\n");
+        System.out.println("Alogrithm: UCT.");
         return new UpperConfidenceBoundSearch(board, GIVEN_TIME, board.getParameter());
       default:
         return null;
@@ -117,16 +120,16 @@ public class Main{
         // return new DLMM(GIVEN_TIME, 5);
         break;
       case PMCGS+"500":
-        System.out.println("Alogrithm: PMCGS.\n");
+        System.out.println("Alogrithm: PMCGS(500).\n");
         return new MonteCarloTreeSearch(board, GIVEN_TIME, 500);
       case PMCGS+"10000":
-        System.out.println("Alogrithm: PMCGS.\n");
+        System.out.println("Alogrithm: PMCGS(10000).\n");
         return new MonteCarloTreeSearch(board, GIVEN_TIME, 10000);
       case UCT+"500":
-        System.out.println("Alogrithm: UCT.\n");
+        System.out.println("Alogrithm: UCT(500).\n");
         return new UpperConfidenceBoundSearch(board, GIVEN_TIME, 500);
       case UCT+"10000":
-        System.out.println("Alogrithm: UCT.\n");
+        System.out.println("Alogrithm: UCT(10000).\n");
         return new UpperConfidenceBoundSearch(board, GIVEN_TIME, 10000);
       default:
         return null;

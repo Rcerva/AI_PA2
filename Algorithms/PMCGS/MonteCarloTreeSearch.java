@@ -1,4 +1,3 @@
-// Monte Carlo Tree Search for Connect 4
 package Algorithms.PMCGS;
 
 import java.util.ArrayList;
@@ -29,12 +28,13 @@ public class MonteCarloTreeSearch extends Algorithm {
   // returns the optimal move for the current player
   public int getOptimalMove() {
     for (long stop = System.nanoTime()+givenTime; stop>System.nanoTime();) {
-      MCTSNode selectedNode = select();
+      MCTSNode selectedNode = select(this.root);
       if(selectedNode == null)
         continue;
-      MCTSNode expandedNode = expand(selectedNode);
-      double result = simulate(expandedNode);
-      backpropagate(expandedNode, result);
+      MCTSNode expandNode = expand(selectedNode);
+      int result = simulate(expandNode);
+      if(this.root.board.getPrint().equals("verbose")) System.out.println("TERMINAL NODE VALUE: " + result +"\n");
+      backpropagate(expandNode, result);
     }
 
     int maxIndex = -1;
@@ -44,11 +44,8 @@ public class MonteCarloTreeSearch extends Algorithm {
           maxIndex = i;
       }
     }
+    if(this.root.board.getPrint().equals("verbose")) System.out.println("Final Move Selected: " + maxIndex);
     return maxIndex;
-  }
-
-  private MCTSNode select() {
-    return select(this.root);
   }
 
   private MCTSNode select(MCTSNode parent) {
@@ -67,8 +64,12 @@ public class MonteCarloTreeSearch extends Algorithm {
         continue;
       MCTSNode currentChild = parent.children[i];
       double wins = parent.board.getNextTurn() == Board.PLAYER_YELLOW_TURN 
-        ? currentChild.playerYellowWins 
-        : (currentChild.visits-currentChild.playerYellowWins);
+        ? currentChild.playerWins 
+        : (currentChild.visits-currentChild.playerWins);
+        if(this.root.board.getPrint().equals("verbose")) {
+          System.out.println("\nwi: " + wins);
+          System.out.println("ni: " + currentChild.visits);
+        }
       double selectionVal = wins/currentChild.visits 
         + EXPLORATION_PARAMETER*Math.sqrt(Math.log(parent.visits)/currentChild.visits);// UCT
       if(selectionVal > maxSelectionVal) {
@@ -79,6 +80,7 @@ public class MonteCarloTreeSearch extends Algorithm {
     // SOMETIMES -1???
     if(maxIndex == -1)
       return null;
+    if(this.root.board.getPrint().equals("verbose"))System.out.println("Move Selected: " + maxIndex);
     return select(parent.children[maxIndex]);
   }
 
@@ -93,34 +95,45 @@ public class MonteCarloTreeSearch extends Algorithm {
 
     // randomly select unvisited child and create node for it
     int selectedIndex = unvisitedChildrenIndices.get((int)(Math.random()*unvisitedChildrenIndices.size()));
+    if(this.root.board.getPrint().equals("verbose"))System.out.println("Node Added\n");
     selectedNode.children[selectedIndex] = new MCTSNode(selectedNode, selectedNode.board.getNextState(selectedIndex));
     return selectedNode.children[selectedIndex];
   } 
 
   // returns result of simulation
-  private double simulate(MCTSNode expandedNode) {
-    Board simulationBoard = expandedNode.board.copy();
-    while(simulationBoard.currentGameState() == Board.ONGOING) {
-      simulationBoard.place((int)(Math.random()*col));
+  private int simulate(MCTSNode expandNode) {
+    //copy of board
+    Board simBoard = expandNode.board.copy();
+    //keep simulating until terminal state
+    while(simBoard.currentGameState() == Board.ONGOING) {
+      simBoard.place((int)(Math.random()*col));
     }
-      // System.out.println(simulationBoard);
 
-    switch(simulationBoard.currentGameState()) {
+    switch(simBoard.currentGameState()) {
       case Board.PLAYER_YELLOW_WON:
         return 1;
       case Board.PLAYER_RED_WON:
-        return 0;
+        return -1;
       default:
-        return 0.5;
+        return 0;
     }
   }
 
-  private void backpropagate(MCTSNode expandedNode, double simulationResult) {
-    MCTSNode currentNode = expandedNode;
-    while(currentNode != null) {
-      currentNode.incrementVisits();
-      currentNode.incrementPlayerYellowWins(simulationResult);
-      currentNode = currentNode.parent;
+  private void backpropagate(MCTSNode expandNode, double simulationResult) {
+    MCTSNode currNode = expandNode;
+    while(currNode != null) {
+      //update visits
+      if(this.root.board.getPrint().equals("verbose")){
+        System.out.println("Updated values:");
+        System.out.println("wi: " + currNode.incrPlayerWins(simulationResult)); 
+        System.out.println("ni: " + currNode.incrVisits()+"\n"); 
+      }else{
+        currNode.incrPlayerWins(simulationResult);
+        currNode.incrVisits();
+      }
+      //update score
+      //go back to prev parent node
+      currNode = currNode.parent;
     }
   }
 
@@ -129,22 +142,22 @@ public class MonteCarloTreeSearch extends Algorithm {
     // children[i] represents the next game state in which current player places disc at location i
     private MCTSNode[] children;
     private int visits;
-    private double playerYellowWins;
+    private double playerWins;
     private final Board board;
     public MCTSNode(MCTSNode parent, Board board) {
       this.parent = parent;
       this.board = board;
       this.visits = 0;
-      this.playerYellowWins = 0;
+      this.playerWins = 0;
       children = new MCTSNode[col];
     }
 
-    public int incrementVisits() {
+    public int incrVisits() {
       return ++visits;
     }
-    public double incrementPlayerYellowWins(double result) {
-      playerYellowWins += result;
-      return playerYellowWins;
+    public double incrPlayerWins(double result) {
+      playerWins += result;
+      return playerWins;
     }
   }
 }
