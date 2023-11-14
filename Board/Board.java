@@ -1,3 +1,4 @@
+//https://github.com/avikj/Connect4AI/blob/master/Connect4Board.java: Nodes/Board and template
 package Board;
 
 import java.io.BufferedReader;
