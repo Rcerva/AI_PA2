@@ -11,6 +11,7 @@ public class MonteCarloTreeSearch extends Algorithm {
   private double C;
   private long time;
 
+  // Constructor to initialize the Monte Carlo Tree Search algorithm
   public MonteCarloTreeSearch(Board board, long time, int param) {
     this.col = board.col;
     this.C = param;
@@ -18,12 +19,15 @@ public class MonteCarloTreeSearch extends Algorithm {
     this.root = new Node(null, board.copy());
   }
 
+  // Update the root of the tree based on the chosen move
   public void updateRoot(int move) {
     if (this.root.getChildren()[move] != null) this.root = this.root.getChildren()[move]; 
     else this.root = new Node(null, this.root.getBoard().getNextState(move));
   }
 
+  // Get the optimal move using Monte Carlo Tree Search
   public int getOptimalMove() {
+    // Run simulations until the allocated time is reached
     for (long stop = System.nanoTime() + time; stop > System.nanoTime();) {
       Node selected = select(this.root);
       if (selected == null) continue;
@@ -33,18 +37,22 @@ public class MonteCarloTreeSearch extends Algorithm {
       backpropagate(expand, result);
     }
 
+    // Find the column index with the maximum visits and return it as the optimal move
     return findMaxVisitIndex();
   }
 
+  // Selection phase: Choose a node using UCT (Upper Confidence Bound for Trees)
   private Node select(Node parent) {
     for (int i = 0; i < col; i++) {
       if (parent.getChildren()[i] == null && parent.getBoard().canPlace(i)) {
-          return parent;
+        return parent;
       }
     }
+    // If all nodes have statistics, use UCT to select the next node to visit
     return selectByUCT(parent);
   }
 
+  // Selection using UCT for nodes with statistics
   private Node selectByUCT(Node parent) {
     double maxSelectionVal = -1;
     int maxIndex = -1;
@@ -71,6 +79,7 @@ public class MonteCarloTreeSearch extends Algorithm {
     return (maxIndex == -1) ? null : select(parent.getChildren()[maxIndex]);
   }
 
+  // Expansion phase: Expand the tree by creating a new node for an unvisited child
   private Node expand(Node selected) {
     ArrayList<Integer> unvisitedIndices = getUnvisitedIndices(selected);
     int selectedIndex = unvisitedIndices.get((int) (Math.random() * unvisitedIndices.size()));
@@ -82,6 +91,7 @@ public class MonteCarloTreeSearch extends Algorithm {
     return children[selectedIndex];
   }
 
+  // Get a list of unvisited child indices for a given node
   private ArrayList<Integer> getUnvisitedIndices(Node selected) {
     ArrayList<Integer> unvisitedIndices = new ArrayList<>();
 
@@ -92,6 +102,7 @@ public class MonteCarloTreeSearch extends Algorithm {
     return unvisitedIndices;
   }
 
+  // Simulation phase: Simulate a game from the current state to the terminal state
   private int simulate(Node expand) {
     Board sim = expand.getBoard().copy();
 
@@ -109,6 +120,7 @@ public class MonteCarloTreeSearch extends Algorithm {
     }
   }
 
+  // Backpropagation phase: Update statistics in the tree based on the simulation result
   private void backpropagate(Node expand, double simResult) {
     Node curr = expand;
 
@@ -126,10 +138,12 @@ public class MonteCarloTreeSearch extends Algorithm {
     }
   }
 
+  // Print verbose information about the terminal node value
   private void printVerboseInfo(int result) {
     if (this.root.getBoard().getPrint().equals("verbose")) System.out.println("TERMINAL NODE VALUE: " + result + "\n");
   }
 
+  // Find the column index with the maximum visits in the root's children
   private int findMaxVisitIndex() {
     int maxIndex = -1;
 
@@ -139,11 +153,13 @@ public class MonteCarloTreeSearch extends Algorithm {
       }
     }
 
+    // Print verbose information about the final move selected
     if (this.root.getBoard().getPrint().equals("verbose")) printVerboseFinalInfo(maxIndex);
 
     return maxIndex;
   }
 
+  // Print verbose information about the final move selected and child statistics
   private void printVerboseFinalInfo(int maxIndex) {
     for (int i = 0; i < 7; i++) {
       Node curr = this.root.getChildren()[i];
