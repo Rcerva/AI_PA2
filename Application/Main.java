@@ -54,13 +54,13 @@ public class Main{
   public static int challengeAis(Board board, Algorithm ai, Algorithm opponent){
     if(opponent == null || ai == null)return -1;
     while(board.currentGameState() == Board.ONGOING) {
-      System.out.println("\n\n"+board);
+      // System.out.println("\n\n"+board);
       int moveColumn;
       do {
         if(board.isTurn()) {
           System.out.print("AI: " + (board.getNextTurn() == Board.PLAYER_YELLOW_TURN ? 'Y' : 'R') + " determining move: " );
           moveColumn = ai.getOptimalMove();
-          System.out.println(moveColumn);
+          // System.out.println(moveColumn);
         }
         else {
           System.out.print("Challenger: " + (board.getNextTurn() == Board.PLAYER_YELLOW_TURN ? 'Y' : 'R') + " determining move: " );
@@ -73,7 +73,7 @@ public class Main{
       opponent.updateRoot(moveColumn);
     }
     System.out.println("\n\n\n\n\n");
-    System.out.println(board);
+    // System.out.println(board);
     int gameState = board.currentGameState();
     switch(gameState) {
       case Board.PLAYER_YELLOW_WON:
