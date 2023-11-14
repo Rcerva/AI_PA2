@@ -27,6 +27,12 @@ public class MonteCarloTreeSearch extends Algorithm {
       playerWins += result;
       return playerWins;
     }
+    public int getVisits(){
+      return this.visits;
+    }
+    public double getPlayerWins(){
+      return this.playerWins;
+    }
   }
   
   private MCTSNode root; // starting state
@@ -66,7 +72,16 @@ public class MonteCarloTreeSearch extends Algorithm {
           maxIndex = i;
       }
     }
-    if(this.root.board.getPrint().equals("verbose")) System.out.println("Final Move Selected: " + maxIndex);
+    if(this.root.board.getPrint().equals("verbose")){
+      for (int i = 0; i < 7; i++) {
+        MCTSNode curr = this.root.children[i];
+        if(curr!=null){
+          double averageScore = curr.getPlayerWins() / curr.getVisits();
+          System.out.println("Column " + (i + 1) + ": " + (curr.getVisits() > 0 ? averageScore : "Null"));
+        }
+      }
+      System.out.println("Final Move Selected: " + maxIndex);
+    }
     return maxIndex;
   }
 

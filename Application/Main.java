@@ -26,12 +26,12 @@ public class Main{
 
     //Test Algorithms part1
     fileName = "test4.txt"; 
-    print = "None";
+    print = "Verbose";
     Board board = new Board(fileName, print.toLowerCase());
     ai = getTheAlgorithm(board, GIVEN_TIME);
     opponent = getTheAlgorithm(board, GIVEN_TIME);
     challengeAis(board, ai, opponent);
-    
+
     board = null;
     ai = null;
     opponent = null;

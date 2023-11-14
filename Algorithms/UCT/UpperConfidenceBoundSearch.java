@@ -26,6 +26,12 @@ public class UpperConfidenceBoundSearch extends Algorithm {
     public double incrPlayerWins(double result) {
       playerWins += result;
       return playerWins;
+    } 
+    public int getVisits(){
+      return this.visits;
+    }
+    public double getPlayerWins(){
+      return this.playerWins;
     }
   }
 
@@ -66,7 +72,16 @@ public class UpperConfidenceBoundSearch extends Algorithm {
           maxIndex = i;
       }
     }
-    if(this.root.board.getPrint().equals("verbose")) System.out.println("Final Move Selected: " + maxIndex);
+    if(this.root.board.getPrint().equals("verbose")){
+      for (int i = 0; i < 7; i++) {
+        UCTNode curr = this.root.children[i];
+        if(curr!=null){
+          double averageScore = curr.getPlayerWins() / curr.getVisits();
+          System.out.println("Column " + (i + 1) + ": " + (curr.getVisits() > 0 ? averageScore : "Null"));
+        }
+      }
+      System.out.println("Final Move Selected: " + maxIndex);
+    }
     return maxIndex;
   }
 
