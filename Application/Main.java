@@ -103,7 +103,6 @@ public class Main{
       case PMCGS:
         System.out.println("Alogrithm: PMCGS.");
         return new MonteCarloTreeSearch(board, GIVEN_TIME, board.getParameter());
-
       case UCT:
         System.out.println("Alogrithm: UCT.");
         return new UpperConfidenceBoundSearch(board, GIVEN_TIME, board.getParameter());
