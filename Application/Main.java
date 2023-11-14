@@ -25,7 +25,7 @@ public class Main{
     
 
     //Test Algorithms part1
-    fileName = "test4.txt"; 
+    fileName = "test5.txt"; 
     print = "Verbose";
     Board board = new Board(fileName, print.toLowerCase());
     ai = getTheAlgorithm(board, GIVEN_TIME);

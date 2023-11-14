@@ -33,7 +33,6 @@ public class UpperConfidenceBoundSearch extends Algorithm {
       if (selected == null) continue;
       Node expand = expand(selected);
       int result = simulate(expand);
-      printVerboseInfo(result);
       backpropagate(expand, result);
     }
 
@@ -54,7 +53,7 @@ public class UpperConfidenceBoundSearch extends Algorithm {
 
   // Selection using UCT for nodes with statistics
   private Node selectByUCT(Node parent) {
-    double maxSelectionVal = -1;
+    double maxSelectionVal = -Double.MAX_VALUE;
     int maxIndex = -1;
 
     for (int i = 0; i < col; i++) {
@@ -64,16 +63,22 @@ public class UpperConfidenceBoundSearch extends Algorithm {
       double wins = (parent.getBoard().getNextTurn() == Board.PLAYER_YELLOW_TURN) ? curr.getPlayerWins() : (curr.getVisits() - curr.getPlayerWins());
 
       if (this.root.getBoard().getPrint().equals("verbose")) {
-        System.out.println("\nwi: " + wins);
-        System.out.println("ni: " + curr.getVisits());
+        printVerboseInfo(curr, i);
       }
 
-      double selectionVal = wins / curr.getVisits() + C * Math.sqrt(Math.log(parent.getVisits()) / curr.getVisits()); // UCT
+
+      double explorationTerm = C * Math.sqrt(Math.log(parent.getVisits()) / curr.getVisits());
+      double selectionVal = wins / curr.getVisits() + explorationTerm; // UCB
 
       if (selectionVal > maxSelectionVal) {
         maxSelectionVal = selectionVal;
         maxIndex = i;
       }
+    }
+    
+    // Call printVerboseInfo for the selected node
+    if (maxIndex != -1 && this.root.getBoard().getPrint().equals("verbose")) {
+      printVerboseInfo(parent.getChildren()[maxIndex], maxIndex);
     }
 
     return (maxIndex == -1) ? null : select(parent.getChildren()[maxIndex]);
@@ -138,9 +143,25 @@ public class UpperConfidenceBoundSearch extends Algorithm {
     }
   }
 
-  // Print verbose information about the terminal node value
-  private void printVerboseInfo(int result) {
-    if (this.root.getBoard().getPrint().equals("verbose")) System.out.println("TERMINAL NODE VALUE: " + result + "\n");
+  // Add this method to print verbose information during selection and simulation
+  private void printVerboseInfo(Node node, int move) {
+    if (this.root.getBoard().getPrint().equals("verbose")) {
+      System.out.println("wi: " + node.getPlayerWins());
+      System.out.println("ni: " + node.getVisits());
+      printChildValues(node);
+      System.out.println("Move selected: " + move);
+    }
+  }
+
+  // Add this method to print child values during selection and simulation
+  private void printChildValues(Node node) {
+    for (int i = 0; i < col; i++) {
+        Node child = node.getChildren()[i];
+        if (child != null) {
+            double averageScore = child.getVisits() > 0 ? child.getPlayerWins() / child.getVisits() : 0.0;
+            System.out.println("V" + (i + 1) + ": " + averageScore);
+        }
+    }
   }
 
   // Find the column index with the maximum visits in the root's children
@@ -159,16 +180,19 @@ public class UpperConfidenceBoundSearch extends Algorithm {
     return maxIndex;
   }
 
-  // Print verbose information about the final move selected and child statistics
+  // Modify this method to print verbose information during the final move selection
   private void printVerboseFinalInfo(int maxIndex) {
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < col; i++) {
       Node curr = this.root.getChildren()[i];
       if (curr != null) {
-        double averageScore = curr.getPlayerWins() / curr.getVisits();
-        System.out.println("Column " + (i + 1) + ": " + (curr.getVisits() > 0 ? averageScore : "Null"));
+        System.out.println("wi: " + curr.getPlayerWins());
+        System.out.println("ni: " + curr.getVisits());
+        printChildValues(curr);
+        System.out.println("Move selected: " + (i + 1));
       }
     }
 
-    System.out.println("Final Move Selected: " + maxIndex);
+    // Print the final move selected
+    System.out.println("FINAL Move selected: " + (maxIndex + 1));
   }
 }
