@@ -8,12 +8,12 @@ public class UpperConfidenceBoundSearch extends Algorithm {
   
   private UCTNode root; // starting state
   private final int col;
-  private double EXPLORATION_PARAMETER;
+  private double C;
   private long givenTime;
   
   public UpperConfidenceBoundSearch(Board board, long time, int param) {
     this.col = board.col;
-    this.EXPLORATION_PARAMETER = param;
+    this.C = param;
     this.givenTime = time;
     this.root = new UCTNode(null, board.copy());
   }
@@ -71,7 +71,7 @@ public class UpperConfidenceBoundSearch extends Algorithm {
           System.out.println("ni: " + currentChild.visits);
         }
       double selectionVal = wins/currentChild.visits 
-        + EXPLORATION_PARAMETER*Math.sqrt(Math.log(parent.visits)/currentChild.visits);// UCT
+        + C*Math.sqrt(Math.log(parent.visits)/currentChild.visits);// UCT
       if(selectionVal > maxSelectionVal) {
         maxSelectionVal = selectionVal;
         maxIndex = i;
