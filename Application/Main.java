@@ -23,6 +23,7 @@ public class Main{
 
     final long GIVEN_TIME = TimeUnit.SECONDS.toNanos(args.length > 0 ? Integer.parseInt(args[0]) : 2);
     
+
     //Test Algorithms part1
     fileName = "test4.txt"; 
     print = "None";
@@ -31,6 +32,10 @@ public class Main{
     opponent = getTheAlgorithm(board, GIVEN_TIME);
     challengeAis(board, ai, opponent);
     
+    board = null;
+    ai = null;
+    opponent = null;
+
     //Tournament part 2
     generateTournament(GIVEN_TIME);
   }
