@@ -20,7 +20,7 @@ public class UR extends Algorithm {
     }
 
     @Override
-    public void update(int moveColumn) {
+    public void updateRoot(int moveColumn) {
         updateOccupied(moveColumn);
     }
 

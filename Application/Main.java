@@ -2,51 +2,70 @@ package Application;
 import java.util.concurrent.TimeUnit;
 
 import Algorithms.Algorithm;
-import Algorithms.DLMM.DLMM;
 import Algorithms.PMCGS.MonteCarloTreeSearch;
 import Algorithms.UCT.UpperConfidenceBoundSearch;
-import Algorithms.UR.UR;
 import Board.Board;
+import Algorithms.UR.UR;
+import Algorithms.DLMM.DLMM;
 
 public class Main{
-  public static final String UR_alg = "UR";
-  public static final String DLMM_alg = "DLMM";
-  public static final String PMCGS_alg = "PMCGS";
-  public static final String UCT_alg = "UCT";
+  public static final String UR = "UR";
+  public static final String DLMM = "DLMM";
+  public static final String PMCGS = "PMCGS";
+  public static final String UCT = "UCT";
 
-  public static final int UR = 1;
-  public static final int DLMM_5 = 2;
-  public static final int PMCGS_500 = 3;
-  public static final int PMCGS_10000 = 4;
-  public static final int UCT_500 = 5;
-  public static final int UCT_10000 = 6;
-
+  public static String[] algortihmList = new String[6];
 
   public static void main(String[] args) {
 
     Algorithm ai;
     Algorithm opponent;
+    String fileName;
+    String print;
 
     final long GIVEN_TIME = TimeUnit.SECONDS.toNanos(args.length > 0 ? Integer.parseInt(args[0]) : 2);
-    String fileName = "test4.txt"; 
-    Board board = new Board(fileName);
+    
 
+    //Test Algorithms part1
+    fileName = "test5.txt"; 
+    print = "Verbose";
+    Board board = new Board(fileName, print.toLowerCase());
     ai = getTheAlgorithm(board, GIVEN_TIME);
-    opponent = getOpponent(board, GIVEN_TIME);
-    challengeAis( board, GIVEN_TIME, ai,opponent);
+    opponent = getTheAlgorithm(board, GIVEN_TIME);
+    challengeAis(board, ai, opponent);
+
+    board = null;
+    ai = null;
+    opponent = null;
+
+    //Tournament part 2
+    generateTournament(GIVEN_TIME,fileName);
+  }
+
+  public static void generateTournament(long time,String fileName){
+    generateChallengers();
+    for (int i = 0; i < algortihmList.length; i++) {
+      for (int j = 1; j < algortihmList.length; j++) {
+          if (i != j) { // Add this condition to avoid the same algorithm playing against itself
+              Board board = new Board(fileName);
+              board.setTeam('Y');
+              challengeAis(board, getChallengers(board, algortihmList[i], time), getChallengers(board, algortihmList[j], time));
+          }
+      }
+  }
   }
 
 
-  public static int challengeAis(Board board, long GIVEN_TIME, Algorithm ai, Algorithm opponent){
-    if(opponent == null){ System.out.println("Invalid Opponent Parameter"); return -1;}
+  public static int challengeAis(Board board, Algorithm ai, Algorithm opponent){
+    if(opponent == null || ai == null)return -1;
     while(board.currentGameState() == Board.ONGOING) {
-      System.out.println("\n\n"+board);
+      // System.out.println("\n\n"+board);
       int moveColumn;
       do {
         if(board.isTurn()) {
           System.out.print("AI: " + (board.getNextTurn() == Board.PLAYER_YELLOW_TURN ? 'Y' : 'R') + " determining move: " );
           moveColumn = ai.getOptimalMove();
-          System.out.println(moveColumn);
+          // System.out.println(moveColumn);
         }
         else {
           System.out.print("Challenger: " + (board.getNextTurn() == Board.PLAYER_YELLOW_TURN ? 'Y' : 'R') + " determining move: " );
@@ -55,12 +74,11 @@ public class Main{
         }
       } while(!board.canPlace(moveColumn));
       board.place(moveColumn);
-      ai.update(moveColumn);
-      opponent.update(moveColumn);
+      ai.updateRoot(moveColumn);
+      opponent.updateRoot(moveColumn);
     }
-
     System.out.println("\n\n\n\n\n");
-    System.out.println(board);
+    // System.out.println(board);
     int gameState = board.currentGameState();
     switch(gameState) {
       case Board.PLAYER_YELLOW_WON:
@@ -73,60 +91,69 @@ public class Main{
         System.out.println("Tie.\n");
         break;
     }
-
     return gameState;
   }
 
 
   public static Algorithm getTheAlgorithm(Board board, long GIVEN_TIME){
-    int[] occupied = new int[7];
+    int[] occupied=new int[7];
      switch(board.getAlgorithm()){
-      case UR_alg:
-        System.out.println("Algorithm: UR.\n");
-            return new UR("UR", occupied);
-      case DLMM_alg:
-        System.out.println("Alogrithm: DLMM.\n");
-        return new DLMM("R", occupied, board);
-
-      case PMCGS_alg:
-        System.out.println("Alogrithm: PMCGS.\n");
-        return new MonteCarloTreeSearch(board, GIVEN_TIME);
-
-      case UCT_alg:
-        System.out.println("Alogrithm: UCT.\n");
-        return new UpperConfidenceBoundSearch(board, GIVEN_TIME);
+      case UR:
+        System.out.println("Alogrithm: UR.");
+         return new UR("UR",occupied);
+      case DLMM:
+        System.out.println("Alogrithm: DLMM.");
+        // return new DLMM("DLMM",occupied,board);
+        break;
+      case PMCGS:
+        System.out.println("Alogrithm: PMCGS.");
+        return new MonteCarloTreeSearch(board, GIVEN_TIME, board.getParameter());
+      case UCT:
+        System.out.println("Alogrithm: UCT.");
+        return new UpperConfidenceBoundSearch(board, GIVEN_TIME, board.getParameter());
       default:
         return null;
 
     }
+    return null;
   }
 
-  
-  public static Algorithm getOpponent(Board board, long GIVEN_TIME){
-        int[] occupied = new int[7];
-    switch(board.getParameter()) {
+  public static Algorithm getChallengers(Board board, String algorithm, long GIVEN_TIME){
+    int[] occupied=new int[7];
+     switch(algorithm){
       case UR:
-        System.out.println("Challenger: UR.\n");
-        return new UR("UR", occupied);
-      case DLMM_5:
-        System.out.println("Challenger: DLMM_5.\n");
-                return new DLMM("R", occupied, board);
-
-      case PMCGS_500:
-        System.out.println("Challenger: PMCGS_500.\n");
-        return new MonteCarloTreeSearch(board, GIVEN_TIME);
-      case PMCGS_10000:
-        System.out.println("Challenger: PMCGS_10000.\n");
-        return new MonteCarloTreeSearch(board, GIVEN_TIME);
-      case UCT_500:
-        System.out.println("Challenger: UCT_500.\n");
-        return new UpperConfidenceBoundSearch(board, GIVEN_TIME);
-      case UCT_10000:
-        System.out.println("Challenger: UCT_10000.\n");
-        return new UpperConfidenceBoundSearch(board, GIVEN_TIME);
+        System.out.println("Alogrithm: UR.\n");
+         return new UR("UR",occupied);
+        
+      case DLMM:
+        System.out.println("Alogrithm: DLMM.\n");
+   //      return new DLMM("DLMM",occupied,board);
+        break;
+      case PMCGS+"500":
+        System.out.println("Alogrithm: PMCGS(500).\n");
+        return new MonteCarloTreeSearch(board, GIVEN_TIME, 500);
+      case PMCGS+"10000":
+        System.out.println("Alogrithm: PMCGS(10000).\n");
+        return new MonteCarloTreeSearch(board, GIVEN_TIME, 10000);
+      case UCT+"500":
+        System.out.println("Alogrithm: UCT(500).\n");
+        return new UpperConfidenceBoundSearch(board, GIVEN_TIME, 500);
+      case UCT+"10000":
+        System.out.println("Alogrithm: UCT(10000).\n");
+        return new UpperConfidenceBoundSearch(board, GIVEN_TIME, 10000);
       default:
-        System.out.println("No Challenger.\n");
         return null;
+
     }
+    return null;
+  }
+
+  public static void generateChallengers(){
+    algortihmList[0] = UR;
+    algortihmList[1] = DLMM;
+    algortihmList[2] = PMCGS+"500";
+    algortihmList[3] = PMCGS+"10000";
+    algortihmList[4] = UCT+"500";
+    algortihmList[5] = UCT+"10000";
   }
 }

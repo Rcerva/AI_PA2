@@ -12,6 +12,7 @@ public class Board {
   private String algorithm;
   private int param;
   private Character team;
+  private String print = "None";
 
   // board contents
   public static final Character EMPTY_SLOT = 'O';
@@ -34,20 +35,36 @@ public class Board {
     board = new Character[row][col]; // default all 0
     nextTurn = PLAYER_YELLOW_TURN;
   }
-
+  public Board() {
+    this(7, 6);
+  }
   public Board(String filename){
     this.col = 7;
     this.row = 6;
     board = new Character[row][col];
     fileIngestor(filename);
   }
-
+  public Board(String filename, String print){
+    this.col = 7;
+    this.row = 6;
+    this.print = print;
+    board = new Character[row][col];
+    fileIngestor(filename);
+  }
   public Board(Character[][] contents, boolean nextTurn) {
     this(contents[0].length, contents.length);
     loadContents(contents);
     this.nextTurn = nextTurn;
   }
+  public Board(int col, int row, String print) {
+    this.col = col;
+    this.row = row;
+    this.print = print;
 
+    this.board = new Character[row][col]; // default all 0
+    intializeBoard();
+    nextTurn = PLAYER_YELLOW_TURN;
+  }
   //check if column allows to drop coin in
   public boolean canPlace(int column) {
     return column >= 0 && column < col && board[0][column] == 'O';
@@ -86,7 +103,10 @@ public class Board {
       for(int j = 0; j < col; j++)
         this.board[i][j] = contents[i][j];
   }
-
+  private void intializeBoard() {
+    for(int i = 0; i < this.board.length; i++)
+      for(int j = 0; j < this.board[0].length; j++) this.board[i][j] = 'O';
+  }
   //make copy of board with constructor that gets the state of the board and the players turn
   public Board copy() {
     return new Board(board, this.nextTurn);
@@ -175,7 +195,12 @@ public class Board {
   public Character getTeam(){
     return this.team;
   }
-
+  public String getPrint(){
+    return this.print;
+  }
+  public void setTeam(Character team){
+    this.team = team;
+  }
   private void fileIngestor(String filename){
     try {
       BufferedReader br = new BufferedReader(new FileReader(filename));

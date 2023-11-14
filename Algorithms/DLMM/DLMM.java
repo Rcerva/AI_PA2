@@ -17,14 +17,14 @@ public class DLMM extends Algorithm{
     public int getOptimalMove() {
         Character[][] grid = board.getGrid(); // Use the appropriate method to get the grid
         // You might need to adjust the parameters here based on your use case
-        return makeMinMaxMove(grid,occupied,algorithmName,5);
+        return makeMinMaxMove(grid,occupied,board.getTeam(),5);
     }
 
     @Override
-    public void update(int moveColumn) {
+    public void updateRoot(int moveColumn) {
         updateOccupied(moveColumn);
     }
-	public static int makeMinMaxMove(Character[][] grid, int[] occupied, String currentPlayer, int depth) {
+	public static int makeMinMaxMove(Character[][] grid, int[] occupied, char currentPlayer, int depth) {
 	    double maxScore = Double.NEGATIVE_INFINITY;
 	    int bestMove = -1;
 
@@ -46,11 +46,11 @@ public class DLMM extends Algorithm{
 	        if (occupied[col] < depth) {
 	            // Simulate making a move
 	            int row = totalRows - occupied[col];
-	            grid[row][col] = currentPlayer.charAt(0);
+	            grid[row][col] = currentPlayer;
 	            occupied[col]++;
 
 	            // Call MinMax with the specified depth
-	            double score = minMax(grid, occupied, 1, depth - 1, !currentPlayer.equals("Y"), currentPlayer);
+	            double score = minMax(grid, occupied, 1, depth - 1, currentPlayer!='Y', currentPlayer);
 	            // Print the score for each column
 	            System.out.println("Column " + (col + 1) + ": " + score);
 
@@ -75,7 +75,7 @@ public class DLMM extends Algorithm{
 	}
 
 
-	private static double minMax(Character[][] grid, int[] occupied, int depth, int maxDepth, boolean maximizingPlayer, String currentPlayer) {
+	private static double minMax(Character[][] grid, int[] occupied, int depth, int maxDepth, boolean maximizingPlayer, char currentPlayer) {
 	    // Check for terminal state
 	    if (isTerminalState(grid, occupied)) {
 	        return evaluateState(grid, occupied);
@@ -92,7 +92,7 @@ public class DLMM extends Algorithm{
 	        for (int col = 0; col < 7; col++) {
 	            if (occupied[col] < 6) {
 	                int row = totalRows - occupied[col];
-	                grid[row][col] = currentPlayer.charAt(0);
+	                grid[row][col] = currentPlayer;
 	                occupied[col]++;
 	                double eval = minMax(grid, occupied, depth + 1, maxDepth, false, currentPlayer);
 	                maxres = Math.max(maxres, eval); // Update maxres directly
@@ -104,7 +104,7 @@ public class DLMM extends Algorithm{
 	        for (int col = 0; col < 7; col++) {
 	            if (occupied[col] < 6) {
 	                int row = totalRows - occupied[col];
-	                grid[row][col] = getOpponentSymbol(currentPlayer.charAt(0));
+	                grid[row][col] = getOpponentSymbol(currentPlayer);
 	                occupied[col]++;
 	                double eval = minMax(grid, occupied, depth + 1, maxDepth, true, currentPlayer);
 	                minres = Math.min(minres, eval); // Update minres directly
