@@ -148,6 +148,18 @@ public class Board {
 
   //Getters / Setters
 
+  public Character[][] getGrid(){
+    return board;
+  }
+  public int getRow(){
+    return row;
+  }
+  public int getCol(){
+    return col;
+  }
+  public void switchTurn(){
+    nextTurn=!nextTurn;
+  }
   public boolean getNextTurn() {
     return nextTurn;
   }

@@ -2,8 +2,10 @@ package Application;
 import java.util.concurrent.TimeUnit;
 
 import Algorithms.Algorithm;
+import Algorithms.DLMM.DLMM;
 import Algorithms.PMCGS.MonteCarloTreeSearch;
 import Algorithms.UCT.UpperConfidenceBoundSearch;
+import Algorithms.UR.UR;
 import Board.Board;
 
 public class Main{
@@ -77,15 +79,15 @@ public class Main{
 
 
   public static Algorithm getTheAlgorithm(Board board, long GIVEN_TIME){
+    int[] occupied = new int[7];
      switch(board.getAlgorithm()){
       case UR_alg:
-        System.out.println("Alogrithm: UR.\n");
-        // return new UR();
-        break;
+        System.out.println("Algorithm: UR.\n");
+            return new UR("UR", occupied);
       case DLMM_alg:
         System.out.println("Alogrithm: DLMM.\n");
-        // return new DLMM();
-        break;
+        return new DLMM("R", occupied, board);
+
       case PMCGS_alg:
         System.out.println("Alogrithm: PMCGS.\n");
         return new MonteCarloTreeSearch(board, GIVEN_TIME);
@@ -97,20 +99,19 @@ public class Main{
         return null;
 
     }
-    return null;
   }
 
   
   public static Algorithm getOpponent(Board board, long GIVEN_TIME){
+        int[] occupied = new int[7];
     switch(board.getParameter()) {
       case UR:
         System.out.println("Challenger: UR.\n");
-        // return new UR();
-        break;
+        return new UR("UR", occupied);
       case DLMM_5:
         System.out.println("Challenger: DLMM_5.\n");
-        // return new DLMM();
-        break;
+                return new DLMM("R", occupied, board);
+
       case PMCGS_500:
         System.out.println("Challenger: PMCGS_500.\n");
         return new MonteCarloTreeSearch(board, GIVEN_TIME);
@@ -127,6 +128,5 @@ public class Main{
         System.out.println("No Challenger.\n");
         return null;
     }
-    return null;
   }
 }
