@@ -5,6 +5,29 @@ import Board.Board;
 import Algorithms.Algorithm;
 
 public class MonteCarloTreeSearch extends Algorithm {
+  private class MCTSNode {
+    private MCTSNode parent;
+    // children[i] represents the next game state in which current player places disc at location i
+    private MCTSNode[] children;
+    private int visits;
+    private double playerWins;
+    private final Board board;
+    public MCTSNode(MCTSNode parent, Board board) {
+      this.parent = parent;
+      this.board = board;
+      this.visits = 0;
+      this.playerWins = 0;
+      children = new MCTSNode[col];
+    }
+
+    public int incrVisits() {
+      return ++visits;
+    }
+    public double incrPlayerWins(double result) {
+      playerWins += result;
+      return playerWins;
+    }
+  }
   
   private MCTSNode root; // starting state
   private final int col;
@@ -20,9 +43,8 @@ public class MonteCarloTreeSearch extends Algorithm {
 
   // sets root to new board state given move
   public void updateRoot(int move) {
-        this.root = this.root.children[move] != null 
-        ? this.root.children[move] 
-        : new MCTSNode(null, this.root.board.getNextState(move));
+    if(this.root.children[move] != null ) this.root = this.root.children[move];
+    else this.root = new MCTSNode(null, this.root.board.getNextState(move));
   }
 
   // returns the optimal move for the current player
@@ -63,13 +85,15 @@ public class MonteCarloTreeSearch extends Algorithm {
       if(!parent.board.canPlace(i))
         continue;
       MCTSNode currentChild = parent.children[i];
-      double wins = parent.board.getNextTurn() == Board.PLAYER_YELLOW_TURN 
-        ? currentChild.playerWins 
-        : (currentChild.visits-currentChild.playerWins);
-        if(this.root.board.getPrint().equals("verbose")) {
-          System.out.println("\nwi: " + wins);
-          System.out.println("ni: " + currentChild.visits);
-        }
+      double wins;
+      if(parent.board.getNextTurn() == Board.PLAYER_YELLOW_TURN) wins = currentChild.playerWins;
+      else wins = (currentChild.visits-currentChild.playerWins);
+
+      if(this.root.board.getPrint().equals("verbose")) {
+        System.out.println("\nwi: " + wins);
+        System.out.println("ni: " + currentChild.visits);
+      }
+      
       double selectionVal = wins/currentChild.visits 
         + C*Math.sqrt(Math.log(parent.visits)/currentChild.visits);// UCT
       if(selectionVal > maxSelectionVal) {
@@ -137,27 +161,4 @@ public class MonteCarloTreeSearch extends Algorithm {
     }
   }
 
-  private class MCTSNode {
-    private MCTSNode parent;
-    // children[i] represents the next game state in which current player places disc at location i
-    private MCTSNode[] children;
-    private int visits;
-    private double playerWins;
-    private final Board board;
-    public MCTSNode(MCTSNode parent, Board board) {
-      this.parent = parent;
-      this.board = board;
-      this.visits = 0;
-      this.playerWins = 0;
-      children = new MCTSNode[col];
-    }
-
-    public int incrVisits() {
-      return ++visits;
-    }
-    public double incrPlayerWins(double result) {
-      playerWins += result;
-      return playerWins;
-    }
-  }
 }
