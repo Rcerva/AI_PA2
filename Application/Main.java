@@ -27,7 +27,7 @@ public class Main{
     
 
     //Test Algorithms part1
-    fileName = "test5.txt"; 
+    fileName = "test2.txt"; 
     print = "Brief";
     Board board = new Board(fileName, print.toLowerCase());
     ai = getTheAlgorithm(board, GIVEN_TIME);
@@ -50,7 +50,6 @@ public class Main{
         board.setTeam('Y');
         challengeAis(board, getChallengers(board,ai,time), getChallengers(board,opponenet,time));}
       }
-
 
 
   public static int challengeAis(Board board, Algorithm ai, Algorithm opponent){
@@ -93,15 +92,14 @@ public class Main{
 
 
   public static Algorithm getTheAlgorithm(Board board, long GIVEN_TIME){
-    int[] occupied=new int[7];
      switch(board.getAlgorithm()){
       case UR:
         System.out.println("Alogrithm: UR.");
-         return new UR("UR",occupied);
+         return new UR("UR",new int[7]);
       case DLMM:
         System.out.println("Alogrithm: DLMM.");
-        // return new DLMM("DLMM",occupied,board);
-        break;
+        return new DLMM("DLMM",new int[7],board);
+        // break;
       case PMCGS:
         System.out.println("Alogrithm: PMCGS.");
         return new MonteCarloTreeSearch(board, GIVEN_TIME, board.getParameter());
@@ -112,19 +110,17 @@ public class Main{
         return null;
 
     }
-    return null;
   }
 
   public static Algorithm getChallengers(Board board, String algorithm, long GIVEN_TIME){
-    int[] occupied=new int[7];
      switch(algorithm){
       case UR:
         System.out.println("Alogrithm: UR.\n");
-        return new UR("UR",occupied);
+        return new UR("UR",new int[7]);
       case DLMM:
         System.out.println("Alogrithm: DLMM.\n");
-        // return new DLMM("DLMM",occupied,board);
-        break;
+        // return new DLMM("DLMM",new int[7],board);
+        return null;
       case PMCGS+"500":
         System.out.println("Alogrithm: PMCGS(500).\n");
         return new MonteCarloTreeSearch(board, GIVEN_TIME, 500);
@@ -141,7 +137,6 @@ public class Main{
         return null;
 
     }
-    return null;
   }
 
   public static void generateChallengers(){
