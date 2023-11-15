@@ -15,7 +15,7 @@ public class DLMM extends Algorithm{
     }
 
     public int getOptimalMove() {
-        Character[][] grid = board.getGrid(); // Use the appropriate method to get the grid
+        Character[][] grid = board.getBoard(); // Use the appropriate method to get the grid
         // You might need to adjust the parameters here based on your use case
         return makeMinMaxMove(grid,occupied,board.getTeam(),5);
     }

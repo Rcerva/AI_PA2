@@ -63,10 +63,6 @@ public class Board {
     loadContents(contents);
     this.nextTurn = nextTurn;
   }
-  public Board(int col, int row, String print) {
-    this.col = col;
-    this.row = row;
-    this.print = print;
 
   public Board() {
     this(7, 6);
@@ -114,10 +110,7 @@ public class Board {
       for(int j = 0; j < col; j++)
         this.board[i][j] = contents[i][j];
   }
-  private void intializeBoard() {
-    for(int i = 0; i < this.board.length; i++)
-      for(int j = 0; j < this.board[0].length; j++) this.board[i][j] = 'O';
-  }
+
   //make copy of board with constructor that gets the state of the board and the players turn
   public Board copy() {
     return new Board(this.board, this.nextTurn, this.print);
@@ -179,18 +172,6 @@ public class Board {
 
   //Getters / Setters
 
-  public Character[][] getGrid(){
-    return board;
-  }
-  public int getRow(){
-    return row;
-  }
-  public int getCol(){
-    return col;
-  }
-  public void switchTurn(){
-    nextTurn=!nextTurn;
-  }
   public boolean getNextTurn() {
     return nextTurn;
   }
@@ -213,6 +194,10 @@ public class Board {
 
   public String getPrint(){
     return this.print;
+  }
+
+  public Character[][] getBoard(){
+    return this.board;
   }
 
   private void fileIngestor(String filename){
