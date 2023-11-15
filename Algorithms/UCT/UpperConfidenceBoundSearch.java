@@ -175,7 +175,7 @@ public class UpperConfidenceBoundSearch extends Algorithm {
     }
 
     // Print verbose information about the final move selected
-    if (this.root.getBoard().getPrint().equals("verbose")) printVerboseFinalInfo(maxIndex);
+    if (this.root.getBoard().getPrint().equals("verbose") || this.root.getBoard().getPrint().equals("brief")) printVerboseFinalInfo(maxIndex);
 
     return maxIndex;
   }

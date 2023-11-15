@@ -28,7 +28,7 @@ public class Main{
 
     //Test Algorithms part1
     fileName = "test5.txt"; 
-    print = "Verbose";
+    print = "Brief";
     Board board = new Board(fileName, print.toLowerCase());
     ai = getTheAlgorithm(board, GIVEN_TIME);
     opponent = getTheAlgorithm(board, GIVEN_TIME);
@@ -60,14 +60,14 @@ public class Main{
       int moveColumn;
       do {
         if(board.isTurn()) {
-          System.out.print("AI: " + (board.getNextTurn() == Board.PLAYER_YELLOW_TURN ? 'Y' : 'R') + " determining move: " );
+          // System.out.print("AI: " + (board.getNextTurn() == Board.PLAYER_YELLOW_TURN ? 'Y' : 'R') + " determining move: " );
           moveColumn = ai.getOptimalMove();
           // System.out.println(moveColumn);
         }
         else {
-          System.out.print("Challenger: " + (board.getNextTurn() == Board.PLAYER_YELLOW_TURN ? 'Y' : 'R') + " determining move: " );
+          // System.out.print("Challenger: " + (board.getNextTurn() == Board.PLAYER_YELLOW_TURN ? 'Y' : 'R') + " determining move: " );
           moveColumn = opponent.getOptimalMove();
-          System.out.println(moveColumn);
+          // System.out.println(moveColumn);
         }
       } while(!board.canPlace(moveColumn));
       board.place(moveColumn);
@@ -116,14 +116,14 @@ public class Main{
   }
 
   public static Algorithm getChallengers(Board board, String algorithm, long GIVEN_TIME){
+    int[] occupied=new int[7];
      switch(algorithm){
       case UR:
         System.out.println("Alogrithm: UR.\n");
         return new UR("UR",occupied);
-        break;
       case DLMM:
         System.out.println("Alogrithm: DLMM.\n");
-        //      return new DLMM("DLMM",occupied,board);
+        // return new DLMM("DLMM",occupied,board);
         break;
       case PMCGS+"500":
         System.out.println("Alogrithm: PMCGS(500).\n");
