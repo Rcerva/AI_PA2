@@ -5,6 +5,8 @@ import Algorithms.Algorithm;
 import Algorithms.PMCGS.MonteCarloTreeSearch;
 import Algorithms.UCT.UpperConfidenceBoundSearch;
 import Board.Board;
+import Algorithms.UR.UR;
+import Algorithms.DLMM.DLMM;
 
 public class Main{
   public static final String UR = "UR";
@@ -91,14 +93,14 @@ public class Main{
 
 
   public static Algorithm getTheAlgorithm(Board board, long GIVEN_TIME){
+    int[] occupied=new int[7];
      switch(board.getAlgorithm()){
       case UR:
         System.out.println("Alogrithm: UR.");
-        // return new UR();
-        break;
+         return new UR("UR",occupied);
       case DLMM:
         System.out.println("Alogrithm: DLMM.");
-        // return new DLMM();
+        // return new DLMM("DLMM",occupied,board);
         break;
       case PMCGS:
         System.out.println("Alogrithm: PMCGS.");
@@ -117,11 +119,11 @@ public class Main{
      switch(algorithm){
       case UR:
         System.out.println("Alogrithm: UR.\n");
-        // return new UR(GIVEN_TIME);
+        return new UR("UR",occupied);
         break;
       case DLMM:
         System.out.println("Alogrithm: DLMM.\n");
-        // return new DLMM(GIVEN_TIME, 5);
+        //      return new DLMM("DLMM",occupied,board);
         break;
       case PMCGS+"500":
         System.out.println("Alogrithm: PMCGS(500).\n");
