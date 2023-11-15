@@ -9,17 +9,18 @@ public class UpperConfidenceBoundSearch extends Algorithm {
   
   private UCTNode root; // starting state
   private final int col;
-  private static final double EXPLORATION_PARAMETER = Math.sqrt(2);
+  private double C = Math.sqrt(2);
   private long givenTime;
   
-  public UpperConfidenceBoundSearch(Board board, long givenTime) {
+  public UpperConfidenceBoundSearch(Board board, long givenTime, int param) {
     this.col = board.col;
     this.givenTime = givenTime;
+    this.C = param;
     this.root = new UCTNode(null, board.copy());
   }
 
   // sets root to new board state given move
-  public void update(int move) {
+  public void updateRoot(int move) {
         this.root = this.root.children[move] != null 
         ? this.root.children[move] 
         : new UCTNode(null, this.root.board.getNextState(move));
@@ -69,7 +70,7 @@ public class UpperConfidenceBoundSearch extends Algorithm {
         ? currentChild.playerYellowWins 
         : (currentChild.visits-currentChild.playerYellowWins);
       double selectionVal = wins/currentChild.visits 
-        + EXPLORATION_PARAMETER*Math.sqrt(Math.log(parent.visits)/currentChild.visits);// UCT
+        + C*Math.sqrt(Math.log(parent.visits)/currentChild.visits);// UCT
       if(selectionVal > maxSelectionVal) {
         maxSelectionVal = selectionVal;
         maxIndex = i;
