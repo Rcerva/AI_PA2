@@ -39,21 +39,18 @@ public class Main{
     opponent = null;
 
     //Tournament part 2
-    generateTournament(GIVEN_TIME,fileName);
+    generateTournament(GIVEN_TIME);
   }
 
-  public static void generateTournament(long time,String fileName){
+  public static void generateTournament(long time){
     generateChallengers();
-    for (int i = 0; i < algortihmList.length; i++) {
-      for (int j = 1; j < algortihmList.length; j++) {
-          if (i != j) { // Add this condition to avoid the same algorithm playing against itself
-              Board board = new Board(fileName);
-              board.setTeam('Y');
-              challengeAis(board, getChallengers(board, algortihmList[i], time), getChallengers(board, algortihmList[j], time));
-          }
+    for(String ai: algortihmList)
+      for(String opponenet: algortihmList){ 
+        Board board = new Board();
+        board.setTeam('Y');
+        challengeAis(board, getChallengers(board,ai,time), getChallengers(board,opponenet,time));}
       }
-  }
-  }
+
 
 
   public static int challengeAis(Board board, Algorithm ai, Algorithm opponent){
@@ -119,15 +116,14 @@ public class Main{
   }
 
   public static Algorithm getChallengers(Board board, String algorithm, long GIVEN_TIME){
-    int[] occupied=new int[7];
      switch(algorithm){
       case UR:
         System.out.println("Alogrithm: UR.\n");
-         return new UR("UR",occupied);
-        
+        return new UR("UR",occupied);
+        break;
       case DLMM:
         System.out.println("Alogrithm: DLMM.\n");
-   //      return new DLMM("DLMM",occupied,board);
+        //      return new DLMM("DLMM",occupied,board);
         break;
       case PMCGS+"500":
         System.out.println("Alogrithm: PMCGS(500).\n");
