@@ -175,23 +175,25 @@ public class UpperConfidenceBoundSearch extends Algorithm {
     }
 
     // Print verbose information about the final move selected
-    if (this.root.getBoard().getPrint().equals("verbose")) printVerboseFinalInfo(maxIndex);
+    if (this.root.getBoard().getPrint().equals("verbose") || this.root.getBoard().getPrint().equals("brief")) printVerboseFinalInfo(maxIndex);
 
     return maxIndex;
   }
 
   // Modify this method to print verbose information during the final move selection
   private void printVerboseFinalInfo(int maxIndex) {
-    for (int i = 0; i < col; i++) {
-      Node curr = this.root.getChildren()[i];
-      if (curr != null) {
-        System.out.println("wi: " + curr.getPlayerWins());
-        System.out.println("ni: " + curr.getVisits());
-        printChildValues(curr);
-        System.out.println("Move selected: " + (i + 1));
+    if(this.root.getBoard().getPrint().equals("verbose")){
+      for (int i = 0; i < col; i++) {
+        Node curr = this.root.getChildren()[i];
+        if (curr != null) {
+          System.out.println("wi: " + curr.getPlayerWins());
+          System.out.println("ni: " + curr.getVisits());
+          printChildValues(curr);
+          System.out.println("Move selected: " + (i + 1));
+        }
       }
     }
-
+    
     // Print the final move selected
     System.out.println("FINAL Move selected: " + (maxIndex + 1));
   }

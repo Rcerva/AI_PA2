@@ -154,20 +154,23 @@ public class MonteCarloTreeSearch extends Algorithm {
     }
 
     // Print verbose information about the final move selected
-    if (this.root.getBoard().getPrint().equals("verbose")) printVerboseFinalInfo(maxIndex);
+    if (this.root.getBoard().getPrint().equals("verbose") || this.root.getBoard().getPrint().equals("brief")) printVerboseFinalInfo(maxIndex);
 
     return maxIndex;
   }
 
   // Print verbose information about the final move selected and child statistics
   private void printVerboseFinalInfo(int maxIndex) {
-    for (int i = 0; i < 7; i++) {
-      Node curr = this.root.getChildren()[i];
-      if (curr != null) {
-        double averageScore = curr.getPlayerWins() / curr.getVisits();
-        System.out.println("Column " + (i + 1) + ": " + (curr.getVisits() > 0 ? averageScore : "Null"));
+    if(this.root.getBoard().getPrint().equals("verbose")){
+      for (int i = 0; i < 7; i++) {
+        Node curr = this.root.getChildren()[i];
+        if (curr != null) {
+          double averageScore = curr.getPlayerWins() / curr.getVisits();
+          System.out.println("Column " + (i + 1) + ": " + (curr.getVisits() > 0 ? averageScore : "Null"));
+        }
       }
     }
+
 
     System.out.println("Final Move Selected: " + maxIndex);
   }

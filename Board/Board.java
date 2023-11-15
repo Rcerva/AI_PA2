@@ -196,6 +196,10 @@ public class Board {
     return this.print;
   }
 
+  public Character[][] getBoard(){
+    return this.board;
+  }
+
   private void fileIngestor(String filename){
     try {
       BufferedReader br = new BufferedReader(new FileReader(filename));

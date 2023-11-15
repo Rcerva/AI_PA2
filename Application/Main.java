@@ -5,6 +5,8 @@ import Algorithms.Algorithm;
 import Algorithms.PMCGS.MonteCarloTreeSearch;
 import Algorithms.UCT.UpperConfidenceBoundSearch;
 import Board.Board;
+import Algorithms.UR.UR;
+import Algorithms.DLMM.DLMM;
 
 public class Main{
   public static final String UR = "UR";
@@ -25,8 +27,8 @@ public class Main{
     
 
     //Test Algorithms part1
-    fileName = "test5.txt"; 
-    print = "Verbose";
+    fileName = "test2.txt"; 
+    print = "Brief";
     Board board = new Board(fileName, print.toLowerCase());
     ai = getTheAlgorithm(board, GIVEN_TIME);
     opponent = getTheAlgorithm(board, GIVEN_TIME);
@@ -50,7 +52,6 @@ public class Main{
       }
 
 
-
   public static int challengeAis(Board board, Algorithm ai, Algorithm opponent){
     if(opponent == null || ai == null)return -1;
     while(board.currentGameState() == Board.ONGOING) {
@@ -58,14 +59,14 @@ public class Main{
       int moveColumn;
       do {
         if(board.isTurn()) {
-          System.out.print("AI: " + (board.getNextTurn() == Board.PLAYER_YELLOW_TURN ? 'Y' : 'R') + " determining move: " );
+          // System.out.print("AI: " + (board.getNextTurn() == Board.PLAYER_YELLOW_TURN ? 'Y' : 'R') + " determining move: " );
           moveColumn = ai.getOptimalMove();
           // System.out.println(moveColumn);
         }
         else {
-          System.out.print("Challenger: " + (board.getNextTurn() == Board.PLAYER_YELLOW_TURN ? 'Y' : 'R') + " determining move: " );
+          // System.out.print("Challenger: " + (board.getNextTurn() == Board.PLAYER_YELLOW_TURN ? 'Y' : 'R') + " determining move: " );
           moveColumn = opponent.getOptimalMove();
-          System.out.println(moveColumn);
+          // System.out.println(moveColumn);
         }
       } while(!board.canPlace(moveColumn));
       board.place(moveColumn);
@@ -94,12 +95,11 @@ public class Main{
      switch(board.getAlgorithm()){
       case UR:
         System.out.println("Alogrithm: UR.");
-        // return new UR();
-        break;
+         return new UR("UR",new int[7]);
       case DLMM:
         System.out.println("Alogrithm: DLMM.");
-        // return new DLMM();
-        break;
+        return new DLMM("DLMM",new int[7],board);
+        // break;
       case PMCGS:
         System.out.println("Alogrithm: PMCGS.");
         return new MonteCarloTreeSearch(board, GIVEN_TIME, board.getParameter());
@@ -110,19 +110,17 @@ public class Main{
         return null;
 
     }
-    return null;
   }
 
   public static Algorithm getChallengers(Board board, String algorithm, long GIVEN_TIME){
      switch(algorithm){
       case UR:
         System.out.println("Alogrithm: UR.\n");
-        // return new UR(GIVEN_TIME);
-        break;
+        return new UR("UR",new int[7]);
       case DLMM:
         System.out.println("Alogrithm: DLMM.\n");
-        // return new DLMM(GIVEN_TIME, 5);
-        break;
+        // return new DLMM("DLMM",new int[7],board);
+        return null;
       case PMCGS+"500":
         System.out.println("Alogrithm: PMCGS(500).\n");
         return new MonteCarloTreeSearch(board, GIVEN_TIME, 500);
@@ -139,7 +137,6 @@ public class Main{
         return null;
 
     }
-    return null;
   }
 
   public static void generateChallengers(){
